@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
@@ -34,17 +35,18 @@ func NewBTCMClient(apiKey, apiSecret string) (*BTCMClient, error) {
 		return nil, errors.New("Error Decoding apiSecret")
 	}
 
-	u, err := url.Parse(path.Join(btcMarketsAPIURL, btcMarketsAPIVersion))
+	u, err := url.Parse(btcMarketsAPIURL)
 	if err != nil {
 		return nil, err
 	}
+	u.Path = path.Join(u.Path, btcMarketsAPIVersion)
 
 	c := &BTCMClient{
 		apiKey:     apiKey,
 		privateKey: p,
 		BaseURL:    u,
 		client:     http.DefaultClient,
-		UserAgent:  "",
+		UserAgent:  "mflow/golang-client",
 	}
 	c.Market = &MarketServiceOp{client: c}
 
@@ -52,9 +54,9 @@ func NewBTCMClient(apiKey, apiSecret string) (*BTCMClient, error) {
 }
 
 // NewRequest creates an API request.
-func (c *BTCMClient) NewRequest(method, urlString string, body interface{}) (*http.Request, error) {
+func (c *BTCMClient) NewRequest(method, urlPath string, body interface{}) (*http.Request, error) {
 	buf := new(bytes.Buffer)
-	rel, err := url.Parse(urlString)
+	rel, err := url.Parse(urlPath)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +64,8 @@ func (c *BTCMClient) NewRequest(method, urlString string, body interface{}) (*ht
 	u := c.BaseURL.ResolveReference(rel)
 	u.Path = path.Join(c.BaseURL.Path, rel.Path)
 
-	req, err := http.NewRequest(method, c.BaseURL.ResolveReference(rel).String(), buf)
+	// fmt.Println(c.BaseURL.ResolveReference(rel).String())
+	req, err := http.NewRequest(method, u.String(), buf)
 	if err != nil {
 		return nil, err
 	}
@@ -89,8 +92,44 @@ func (c *BTCMClient) Do(req *http.Request, v interface{}) (*http.Response, error
 	}
 
 	defer resp.Body.Close()
+	err = CheckResponse(resp)
+	if err != nil {
+		return nil, err
+	}
+
 	if v != nil {
 		err = json.NewDecoder(resp.Body).Decode(v)
 	}
 	return resp, err
+}
+
+// An ErrorResponse reports the error caused by an API request
+type ErrorResponse struct {
+	// HTTP response that caused this error
+	Response *http.Response
+
+	// Error message - maybe the json for this is "fault"
+	Message string `json:"message"`
+}
+
+// CheckResponse checks the API response for errors, and returns them if
+// present. A response is considered an error if it has a status code outside
+// the 200 range. API error responses are expected to have either no response
+// body, or a JSON response body that maps to ErrorResponse. Any other response
+// body will be silently ignored.
+func CheckResponse(r *http.Response) error {
+	if c := r.StatusCode; c >= 200 && c <= 299 {
+		return nil
+	}
+
+	errorResponse := &ErrorResponse{Response: r}
+	data, err := ioutil.ReadAll(r.Body)
+	if err == nil && len(data) > 0 {
+		err := json.Unmarshal(data, errorResponse)
+		if err != nil {
+			return err
+		}
+	}
+
+	return errors.New("Error Response")
 }
