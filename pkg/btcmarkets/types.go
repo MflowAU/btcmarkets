@@ -59,27 +59,6 @@ const (
 	trade       = "trade"
 )
 
-// Ticker holds ticker information
-type Ticker struct {
-	MarketID  string    `json:"marketId"`
-	BestBID   float64   `json:"bestBid,string"`
-	BestAsk   float64   `json:"bestAsk,string"`
-	LastPrice float64   `json:"lastPrice,string"`
-	Volume    float64   `json:"volume24h,string"`
-	Change24h float64   `json:"price24h,string"`
-	Low24h    float64   `json:"low24h,string"`
-	High24h   float64   `json:"high24h,string"`
-	Timestamp time.Time `json:"timestamp"`
-}
-
-// Trade holds trade information
-type Trade struct {
-	TradeID   string    `json:"id"`
-	Amount    float64   `json:"amount,string"`
-	Price     float64   `json:"price,string"`
-	Timestamp time.Time `json:"timestamp"`
-}
-
 // tempOrderbook stores orderbook data
 type tempOrderbook struct {
 	MarketID   string      `json:"marketId"`
