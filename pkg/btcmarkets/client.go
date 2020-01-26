@@ -21,7 +21,8 @@ type BTCMClient struct {
 	UserAgent  string
 
 	// Services used for communicating with the API
-	Market MarketService
+	// Market MarketService
+	M MarketServiceOp
 }
 
 // NewBTCMClient should return a new instance of BTCMarkets Client
@@ -48,7 +49,8 @@ func NewBTCMClient(apiKey, apiSecret string) (*BTCMClient, error) {
 		client:     http.DefaultClient,
 		UserAgent:  "mflow/golang-client",
 	}
-	c.Market = &MarketServiceOp{client: c}
+	// c.Market = &MarketServiceOp{client: c}
+	c.M = MarketServiceOp{client: c}
 
 	return c, nil
 }
@@ -130,6 +132,6 @@ func CheckResponse(r *http.Response) error {
 			return err
 		}
 	}
-
 	return errors.New("Error Response")
+
 }
