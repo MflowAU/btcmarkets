@@ -66,6 +66,16 @@ type OrderBook struct {
 	Bids       [][]string `json:"bids"`
 }
 
+// Candle holds time, open, high, low, close & volume information for a given trading pair
+type Candle struct {
+	Time   time.Time
+	Open   float64
+	High   float64
+	Low    float64
+	Close  float64
+	Volume float64
+}
+
 //AllMarkets Retrieves list of active markets including configuration for each market
 func (s *MarketServiceOp) AllMarkets() ([]Market, error) {
 	var markets []Market
@@ -158,4 +168,54 @@ func (s *MarketServiceOp) GetMarketOrderbook(marketID string, level int) (*Order
 	}
 
 	return &orderbooks, nil
+}
+
+// GetMarketCandles Retrieves array of candles for a given market. Each candle record is an array of string representing
+// [time,open,high,low,close,volume] for the time window specified (default time window is 1 day).
+//
+// This API can be used to retrieve candles either by pagination (before, after, limit) or by specifying timestamp parameters
+// (from and/or to). Pagination parameters can't be combined with timestamp parameters and default behavior is pagination when
+//  no query param is specified.
+//
+// When using timestamp parameters as query string, the maximum number of items that can be retrieved is 1000, and depending
+//  on the specified timeWindow this can be different time windows. For instance, when using timeWindow=1d then up to 1000 days
+//  of market candles can be retrieved.
+func (s *MarketServiceOp) GetMarketCandles(marketID, timeWindow string, from, to time.Time, before, after, limit int) ([]Candle, error) {
+	var candles []Candle
+	params := url.Values{}
+
+	if timeWindow != "1m" || timeWindow != "1h" || timeWindow != "1d" {
+		return nil, errors.New("timeWindow needs to be set to either 1m, 1h or 1d. Please refer to the documentation for more details")
+	}
+	params.Set("timeWindow", timeWindow)
+
+	if from != nil {
+		params.Set("from", from.Format(time.RFC3339))
+	}
+
+	if to != nil {
+		params.Set("to", from.Format(time.RFC3339))
+	}
+
+	if limit > 0 {
+		params.Set("limit", strconv.Itoa(limit))
+	}
+	if after >= 0 {
+		params.Set("after", strconv.Itoa(after))
+	}
+	if before > 0 {
+		params.Set("before", strconv.Itoa(before))
+	}
+
+	req, err := s.client.NewRequest(http.MethodGet, path.Join(btcMarketsAllMarkets, marketID, btcMarketsCandles), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = s.client.Do(req, &candles)
+	if err != nil {
+		return nil, err
+	}
+
+	return candles, nil
 }
