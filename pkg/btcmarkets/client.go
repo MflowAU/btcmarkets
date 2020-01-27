@@ -99,8 +99,10 @@ func (c *BTCMClient) Do(req *http.Request, v interface{}) (*http.Response, error
 		return nil, err
 	}
 
+	body, err := ioutil.ReadAll(resp.Body)
 	if v != nil {
-		err = json.NewDecoder(resp.Body).Decode(v)
+		// err = json.NewDecoder(body).Decode(v)
+		err = json.Unmarshal(body, v)
 	}
 	return resp, err
 }
