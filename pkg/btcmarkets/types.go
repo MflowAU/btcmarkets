@@ -67,19 +67,19 @@ type tempOrderbook struct {
 	Bids       [][2]string `json:"bids"`
 }
 
-// OBData stores orderbook data
-type OBData struct {
-	Price  float64
-	Volume float64
-}
+// // OBData stores orderbook data
+// type OBData struct {
+// 	Price  float64
+// 	Volume float64
+// }
 
-// Orderbook holds current orderbook information returned from the exchange
-type Orderbook struct {
-	MarketID   string
-	SnapshotID int64
-	Asks       []OBData
-	Bids       []OBData
-}
+// // Orderbook holds current orderbook information returned from the exchange
+// type Orderbook struct {
+// 	MarketID   string
+// 	SnapshotID int64
+// 	Asks       []OBData
+// 	Bids       []OBData
+// }
 
 // MarketCandle stores candle data for a given pair
 type MarketCandle struct {
