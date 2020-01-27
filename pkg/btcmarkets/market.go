@@ -58,12 +58,12 @@ type Trade struct {
 	Side      string    `json:"side"`
 }
 
-// OrderBook holds orderbook information
+// OrderBook holds current orderbook information returned from the exchange
 type OrderBook struct {
-	MarketID   string      `json:"marketId"`
-	SnapshotID int         `json:"snapshotId"`
-	Ask        [][2]string `json:"asks"`
-	Bid        [][2]string `json:"bids"`
+	MarketID   string     `json:"marketId"`
+	SnapshotID int        `json:"snapshotId"`
+	Asks       [][]string `json:"asks"`
+	Bids       [][]string `json:"bids"`
 }
 
 //AllMarkets Retrieves list of active markets including configuration for each market
@@ -107,7 +107,7 @@ func (s *MarketServiceOp) GetMarketTrades(marketID string, after, before, limit 
 	params := url.Values{}
 
 	if after > 0 && before > 0 {
-		return nil, errors.New("Using before and after simultaneously is not supported")
+		return nil, errors.New("Using `before` and `after` simultaneously is not supported")
 	}
 
 	if limit > 0 {
@@ -132,4 +132,30 @@ func (s *MarketServiceOp) GetMarketTrades(marketID string, after, before, limit 
 	}
 
 	return trades, nil
+}
+
+// GetMarketOrderbook Retrieves list of bids and asks for a given market. passing level=1 returns top 50 for bids and asks.
+// level=2 returns full orderbook (full orderbook data is cached and usually updated every 10 seconds).
+// Each market order is represented as an array of string [price, volume]. The attribute, snapshotId, is a
+// uniqueue number associated to orderbook and it changes every time orderbook changes.
+func (s *MarketServiceOp) GetMarketOrderbook(marketID string, level int) (*OrderBook, error) {
+	var orderbooks OrderBook
+	params := url.Values{}
+
+	if level < 1 || level > 2 {
+		return nil, errors.New("level can only take the value 1 or 2. Please check the API documentation for more details")
+	}
+	params.Set("level", strconv.Itoa(level))
+
+	req, err := s.client.NewRequest(http.MethodGet, path.Join(btcMarketsAllMarkets, marketID, btcMarketOrderBooks+params.Encode()), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = s.client.Do(req, &orderbooks)
+	if err != nil {
+		return nil, err
+	}
+
+	return &orderbooks, nil
 }
