@@ -264,3 +264,27 @@ func (s *MarketServiceOp) GetMarketCandles(marketID, timeWindow string, from, to
 	}
 	return candles, nil
 }
+
+// GetMultipleTickers This API works similar to /v3/markets/{marketId}/ticker except it retrieves tickers for a given list of marketIds
+// provided via query string (e.g. ?marketId=ETH-BTC&marketId=XRP-BTC).
+// To gain better performance, restrict the number of marketIds to the items needed for your trading app instead of requesting all markets.
+func (s *MarketServiceOp) GetMultipleTickers(marketIDs []string) ([]Ticker, error) {
+	var tickers []Ticker
+	param := url.Values{}
+
+	for _, v := range marketIDs {
+		param.Add("marketId", v)
+	}
+
+	req, err := s.client.NewRequest(http.MethodGet, path.Join(btcMarketsAllMarkets, btcMarketsGetTickers+param.Encode()), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = s.client.Do(req, &tickers)
+	if err != nil {
+		return nil, err
+	}
+
+	return tickers, nil
+}
