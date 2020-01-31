@@ -288,3 +288,33 @@ func (s *MarketServiceOp) GetMultipleTickers(marketIDs []string) ([]Ticker, erro
 
 	return tickers, nil
 }
+
+// GetMultipleOrderbooks This API works similar to /v3/markets/{marketId}/orderbook except it retrieves orderbooks for a given list of marketIds provided via query string (e.g. ?marketId=ETH-BTC&marketId=XRP-BTC).
+// To gain better performance, restrict the number of marketIds to the items needed for your trading app instead of requesting all markets.
+// Retrieving full orderbook (level=2), for multiple markets, was mainly provided for customers who are interested in capturing and keeping full orderbook history.
+// Therefore, it's recommended to call this API with lower frequency as the data size can be large and also cached.
+func (s *MarketServiceOp) GetMultipleOrderbooks(marketIDs []string, level int) ([]OrderBook, error) {
+	var orderbooks []OrderBook
+	params := url.Values{}
+
+	if level < 1 || level > 2 {
+		return nil, errors.New("level can only take the value 1 or 2. Please check the API documentation for more details")
+	}
+	params.Add("level", strconv.Itoa(level))
+
+	for i := range marketIDs {
+		params.Add("marketId", marketIDs[i])
+	}
+
+	req, err := s.client.NewRequest(http.MethodGet, path.Join(btcMarketsAllMarkets, btcMarketMultipleOrderBooks+params.Encode()), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = s.client.Do(req, &orderbooks)
+	if err != nil {
+		return nil, err
+	}
+
+	return orderbooks, nil
+}

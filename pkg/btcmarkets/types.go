@@ -12,6 +12,7 @@ const (
 	btcMarketsGetTickers         = "/tickers?"
 	btcMarketsGetTrades          = "/trades?"
 	btcMarketOrderBooks          = "/orderbook?"
+	btcMarketMultipleOrderBooks  = "/orderbooks?"
 	btcMarketsCandles            = "/candles?"
 	btcMarketsTickers            = "tickers?"
 	btcMarketsMultipleOrderbooks = "/orderbooks?"
