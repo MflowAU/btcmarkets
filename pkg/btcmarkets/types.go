@@ -9,6 +9,7 @@ const (
 	// UnAuthenticated EPs
 	btcMarketsAllMarkets         = "/markets/"
 	btcMarketsGetTicker          = "/ticker/"
+	btcMarketsGetTickers         = "/tickers?"
 	btcMarketsGetTrades          = "/trades?"
 	btcMarketOrderBooks          = "/orderbook?"
 	btcMarketsCandles            = "/candles?"
