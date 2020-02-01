@@ -119,21 +119,21 @@ type OrderToGo struct {
 }
 
 // Order holds order information
-type Order struct {
-	ID              int64           `json:"id"`
-	Currency        string          `json:"currency"`
-	Instrument      string          `json:"instrument"`
-	OrderSide       string          `json:"orderSide"`
-	OrderType       string          `json:"ordertype"`
-	CreationTime    time.Time       `json:"creationTime"`
-	Status          string          `json:"status"`
-	ErrorMessage    string          `json:"errorMessage"`
-	Price           float64         `json:"price"`
-	Volume          float64         `json:"volume"`
-	OpenVolume      float64         `json:"openVolume"`
-	ClientRequestID string          `json:"clientRequestId"`
-	Trades          []TradeResponse `json:"trades"`
-}
+// type Order struct {
+// 	ID              int64           `json:"id"`
+// 	Currency        string          `json:"currency"`
+// 	Instrument      string          `json:"instrument"`
+// 	OrderSide       string          `json:"orderSide"`
+// 	OrderType       string          `json:"ordertype"`
+// 	CreationTime    time.Time       `json:"creationTime"`
+// 	Status          string          `json:"status"`
+// 	ErrorMessage    string          `json:"errorMessage"`
+// 	Price           float64         `json:"price"`
+// 	Volume          float64         `json:"volume"`
+// 	OpenVolume      float64         `json:"openVolume"`
+// 	ClientRequestID string          `json:"clientRequestId"`
+// 	Trades          []TradeResponse `json:"trades"`
+// }
 
 // TradeResponse holds trade information
 type TradeResponse struct {
