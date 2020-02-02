@@ -21,22 +21,22 @@ type OrderServiceOp struct {
 	client *BTCMClient
 }
 
-// ListOrders Return an array of historucal orders or open orders only.
+// ListOrders Return an array of historical orders or open orders only.
 // All query string parametesr are optional so by default and when no query
 // parameter is provided, this API retrieves open orders only for all markets.
 // This API supports pagination only when retrieving all orders status=all,
 // When sending using status=open all open orders are returned and with no pagination.
-func (o *OrderServiceOp) ListOrders(markerID, status string, before, after int64, limit int32) (*Order, error) {
-	var order Order
+func (o *OrderServiceOp) ListOrders(markerID, status string, before, after int64, limit int32) ([]Order, error) {
+	var orders []Order
 
 	req, err := o.client.NewRequest(http.MethodGet, btcMarketsOrders, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = o.client.DoAuthenticated(req, &order)
+	_, err = o.client.DoAuthenticated(req, &orders)
 	if err != nil {
 		return nil, err
 	}
-	return &order, nil
+	return orders, nil
 }

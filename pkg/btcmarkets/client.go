@@ -7,10 +7,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"path"
 	"strconv"
@@ -142,17 +140,15 @@ func (c *BTCMClient) DoAuthenticated(req *http.Request, v interface{}) (*http.Re
 	}
 	defer resp.Body.Close()
 
-	// err = CheckResponse(resp)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	body, err := ioutil.ReadAll(resp.Body)
-	dump, err := httputil.DumpResponse(resp, true)
+	err = CheckResponse(resp)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("%q", dump)
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
 	if v != nil {
 		// err = json.NewDecoder(body).Decode(v)
 		err = json.Unmarshal(body, v)
