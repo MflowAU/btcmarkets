@@ -15,4 +15,5 @@
 vendor/
 .vscode
 
+# Dev dependencies
 cmd/secret.go
