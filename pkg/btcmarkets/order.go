@@ -1,6 +1,7 @@
 package btcmarkets
 
 import (
+	"errors"
 	"net/http"
 	"net/url"
 	"path"
@@ -18,6 +19,12 @@ type Order struct {
 	Side         string `json:"side"`
 	Status       string `json:"status"`
 	Type         string `json:"type"`
+}
+
+// CancelOrderResp stores data for cancelled orders
+type CancelOrderResp struct {
+	ClientOrderID string `json:"clientOrderId"`
+	OrderID       string `json:"orderId"`
 }
 
 // OrderServiceOp perform Order Placement API
@@ -61,4 +68,48 @@ func (o *OrderServiceOp) ListOrders(marketID, status string, before, after int64
 		return nil, err
 	}
 	return orders, nil
+}
+
+// CancelOpenOrdersByPairs Cancels specified trading pairs for open orders for all markets or optionally
+//  for a given list of marketIds only.
+func (o *OrderServiceOp) CancelOpenOrdersByPairs(marketID []string) ([]CancelOrderResp, error) {
+	var c []CancelOrderResp
+	params := url.Values{}
+
+	if len(marketID) < 1 {
+		return nil, errors.New("CancelOpenOrdersByPairs requires atleast 1 pair")
+	}
+
+	for i := range marketID {
+		params.Add("marketId", marketID[i])
+	}
+
+	req, err := o.client.NewRequest(http.MethodDelete, path.Join(btcMarketsOrders, "?"+params.Encode()), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = o.client.DoAuthenticated(req, &c)
+	if err != nil {
+		return nil, err
+	}
+
+	return c, nil
+}
+
+// CancelAllOpenOrders Cancels all open orders
+func (o *OrderServiceOp) CancelAllOpenOrders() ([]CancelOrderResp, error) {
+	var c []CancelOrderResp
+
+	req, err := o.client.NewRequest(http.MethodDelete, path.Join(btcMarketsOrders), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = o.client.DoAuthenticated(req, &c)
+	if err != nil {
+		return nil, err
+	}
+
+	return c, nil
 }
