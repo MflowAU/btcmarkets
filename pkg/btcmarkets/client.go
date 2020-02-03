@@ -122,7 +122,7 @@ func (c *BTCMClient) Do(req *http.Request, v interface{}) (*http.Response, error
 // DoAuthenticated makes API requeßst and return the API Response
 func (c *BTCMClient) DoAuthenticated(req *http.Request, v interface{}) (*http.Response, error) {
 	t := strconv.FormatInt(time.Now().UTC().UnixNano()/1000000, 10)
-	p := req.URL.RequestURI()
+	p := req.URL.Path
 	m := req.Method + p + t + "" //TODO: change empty string with data passed for the body
 	h := hmac.New(sha512.New, c.privateKey)
 	h.Write([]byte(m))

@@ -1,6 +1,11 @@
 package btcmarkets
 
-import "net/http"
+import (
+	"net/http"
+	"net/url"
+	"path"
+	"strconv"
+)
 
 // Order holds order information
 type Order struct {
@@ -26,10 +31,27 @@ type OrderServiceOp struct {
 // parameter is provided, this API retrieves open orders only for all markets.
 // This API supports pagination only when retrieving all orders status=all,
 // When sending using status=open all open orders are returned and with no pagination.
-func (o *OrderServiceOp) ListOrders(markerID, status string, before, after int64, limit int32) ([]Order, error) {
+func (o *OrderServiceOp) ListOrders(marketID, status string, before, after int64, limit int32) ([]Order, error) {
 	var orders []Order
 
-	req, err := o.client.NewRequest(http.MethodGet, btcMarketsOrders, nil)
+	params := url.Values{}
+	if marketID != "" {
+		params.Add("marketId", marketID)
+	}
+	if status != "" && (status == "all" || status == "open") {
+		params.Add("status", status)
+	}
+	if after > 0 {
+		params.Add("after", strconv.FormatInt(after, 10))
+	}
+	if before > 0 {
+		params.Add("before", strconv.FormatInt(before, 10))
+	}
+	if limit > 0 {
+		params.Add("limit", strconv.Itoa(int(limit)))
+	}
+
+	req, err := o.client.NewRequest(http.MethodGet, path.Join(btcMarketsOrders, "?"+params.Encode()), nil)
 	if err != nil {
 		return nil, err
 	}
