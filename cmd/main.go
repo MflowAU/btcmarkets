@@ -7,7 +7,8 @@ import (
 )
 
 func main() {
-	c, err := btcmarkets.NewBTCMClient(secret())
+	c, err := btcmarkets.NewBTCMClient(adminSecret())
+	// c, err := btcmarkets.NewBTCMClient(secret())
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -42,8 +43,6 @@ func main() {
 
 	markets := make([]string, 0, 5)
 	markets = append(markets, "BTC-AUD")
-	markets = append(markets, "LTC-AUD")
-	markets = append(markets, "XRP-AUD")
 	// tickers, err := c.Market.GetMultipleTickers(markets)
 	// if err != nil {
 	// 	fmt.Println(err.Error())
@@ -57,9 +56,33 @@ func main() {
 	// }
 	// fmt.Printf("%+v", orders)
 
-	o, err := c.Order.ListOrders("BTC-AUD", "all", 0, 0, 10)
+	// o, err := c.Order.ListOrders("BTC-AUD", "open", 0, 0, 10)
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
+	// fmt.Printf("%+v", o)
+
+	// cno, err := c.Order.CancelOrder("5251295067")
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
+	// fmt.Printf("%+v", cno)
+
+	// cpo, err := c.Order.CancelOpenOrdersByPairs(markets)
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
+	// fmt.Printf("%+v", cpo)
+
+	// cao, err := c.Order.CancelAllOpenOrders()
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
+	// fmt.Printf("%+v", cao)
+
+	geto, err := c.Order.GetOrder("5251457662")
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	fmt.Printf("%+v", o)
+	fmt.Printf("%+v", geto)
 }

@@ -113,3 +113,41 @@ func (o *OrderServiceOp) CancelAllOpenOrders() ([]CancelOrderResp, error) {
 
 	return c, nil
 }
+
+// CancelOrder Cancels a single order. this API returns http error 400 if the order is realdy cancelled or matched, patrally matched.
+func (o *OrderServiceOp) CancelOrder(orderID string) (*CancelOrderResp, error) {
+	var c CancelOrderResp
+
+	req, err := o.client.NewRequest(http.MethodDelete, path.Join(btcMarketsOrders, orderID), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = o.client.DoAuthenticated(req, &c)
+	if err != nil {
+		return nil, err
+	}
+
+	return &c, nil
+}
+
+// GetOrder Returns an order by using either the exachange `orderId` or `clientOrderId`
+func (o *OrderServiceOp) GetOrder(orderID string) (*Order, error) {
+	var or Order
+
+	req, err := o.client.NewRequest(http.MethodGet, path.Join(btcMarketsOrders, orderID), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = o.client.DoAuthenticated(req, &or)
+	if err != nil {
+		return nil, err
+	}
+
+	return &or, nil
+}
+
+// func (o *OrderServiceOp) PlaceNewOrder() {
+
+// }

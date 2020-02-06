@@ -180,10 +180,10 @@ type OrderData struct {
 }
 
 // CancelOrderResp stores data for cancelled orders
-type CancelOrderResp struct {
-	OrderID       string `json:"orderId"`
-	ClientOrderID string `json:"clientOrderId"`
-}
+// type CancelOrderResp struct {
+// 	OrderID       string `json:"orderId"`
+// 	ClientOrderID string `json:"clientOrderId"`
+// }
 
 // PaymentDetails stores payment address
 type PaymentDetails struct {
