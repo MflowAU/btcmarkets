@@ -75,10 +75,17 @@ func (c *BTCMClient) NewRequest(method, urlPath string, body interface{}) (*http
 		return nil, err
 	}
 
+	if body != nil {
+		json, err := json.Marshal(body)
+		if err != nil {
+			return nil, err
+		}
+		buf.Write(json)
+	}
+
 	u := c.BaseURL.ResolveReference(rel)
 	u.Path = path.Join(c.BaseURL.Path, rel.Path)
 
-	// fmt.Println(c.BaseURL.ResolveReference(rel).String())
 	req, err := http.NewRequest(method, u.String(), buf)
 	if err != nil {
 		return nil, err
@@ -120,16 +127,29 @@ func (c *BTCMClient) Do(req *http.Request, v interface{}) (*http.Response, error
 }
 
 // DoAuthenticated makes API requeßst and return the API Response
-func (c *BTCMClient) DoAuthenticated(req *http.Request, v interface{}) (*http.Response, error) {
+func (c *BTCMClient) DoAuthenticated(req *http.Request, data, result interface{}) (*http.Response, error) {
 	t := strconv.FormatInt(time.Now().UTC().UnixNano()/1000000, 10)
 	p := req.URL.Path
-	m := req.Method + p + t + "" //TODO: change empty string with data passed for the body
 	h := hmac.New(sha512.New, c.privateKey)
-	h.Write([]byte(m))
 
-	// req.Header.Add("Accept", "application/json")
-	// req.Header.Add("Accept-Charset", "UTF-8")
-	req.Header.Add("Content-Type", "application/json;charset=UTF-8")
+	switch data.(type) {
+	case map[string]interface{}, []interface{}:
+		payload, err := json.Marshal(data)
+		strPayload := string(payload)
+		if err != nil {
+			return nil, err
+		}
+
+		m := req.Method + p + t + strPayload
+		h.Write([]byte(m))
+		// req.Header.Add("Content-Length", strconv.Itoa(len(strPayload)))
+	default:
+		m := req.Method + p + t + ""
+		h.Write([]byte(m))
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept-Charset", "UTF-8")
 	req.Header.Add("BM-AUTH-APIKEY", c.apiKey)
 	req.Header.Add("BM-AUTH-TIMESTAMP", t)
 	req.Header.Add("BM-AUTH-SIGNATURE", base64.StdEncoding.EncodeToString(h.Sum(nil)))
@@ -149,9 +169,9 @@ func (c *BTCMClient) DoAuthenticated(req *http.Request, v interface{}) (*http.Re
 	if err != nil {
 		return nil, err
 	}
-	if v != nil {
+	if result != nil {
 		// err = json.NewDecoder(body).Decode(v)
-		err = json.Unmarshal(body, v)
+		err = json.Unmarshal(body, result)
 	}
 
 	return resp, err
@@ -168,6 +188,11 @@ type ErrorResponse struct {
 	Message string `json:"message"`
 }
 
+// Error method to satisfy the Error Interface requirement
+func (e ErrorResponse) Error() string {
+	return e.Message
+}
+
 // CheckResponse checks the API response for errors, and returns them if
 // present. A response is considered an error if it has a status code outside
 // the 200 range. API error responses are expected to have either no response
@@ -180,14 +205,13 @@ func CheckResponse(r *http.Response) error {
 
 	errorResponse := &ErrorResponse{Response: r}
 	data, err := ioutil.ReadAll(r.Body)
-	if err == nil && len(data) > 0 {
-		err := json.Unmarshal(data, errorResponse)
-		if err != nil {
-			return err
-		}
+	if err != nil {
+		errorResponse.Message = err.Error()
+		return errorResponse
 	}
-	return errors.New("Error Response")
 
+	errorResponse.Message = string(data)
+	return errorResponse
 }
 
 // GetServerTime get the BTCMarkets server time
