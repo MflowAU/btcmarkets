@@ -166,19 +166,6 @@ type TradeHistoryData struct {
 	LiquidityType string    `json:"liquidityType"`
 }
 
-// OrderData stores data for new order created
-type OrderData struct {
-	OrderID      string    `json:"orderId"`
-	MarketID     string    `json:"marketId"`
-	Side         string    `json:"side"`
-	Type         string    `json:"type"`
-	CreationTime time.Time `json:"creationTime"`
-	Price        float64   `json:"price,string"`
-	Amount       float64   `json:"amount,string"`
-	OpenAmount   float64   `json:"openAmount,string"`
-	Status       string    `json:"status"`
-}
-
 // CancelOrderResp stores data for cancelled orders
 // type CancelOrderResp struct {
 // 	OrderID       string `json:"orderId"`
