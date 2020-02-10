@@ -56,11 +56,11 @@ func main() {
 	// }
 	// fmt.Printf("%+v", orders)
 
-	o, err := c.Order.ListOrders("BTC-AUD", "all", 0, 0, 10)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	fmt.Printf("%+v \n\n\n\n", o)
+	// o, err := c.Order.ListOrders("BTC-AUD", "open", 0, 0, 10)
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
+	// fmt.Printf("%+v", o)
 
 	// cno, err := c.Order.CancelOrder("5251295067")
 	// if err != nil {
@@ -91,4 +91,5 @@ func main() {
 	// 	fmt.Println(err.Error())
 	// }
 	// fmt.Printf("%+v", no)
+
 }

@@ -119,21 +119,21 @@ type OrderToGo struct {
 }
 
 // Order holds order information
-type Order struct {
-	ID              int64           `json:"id"`
-	Currency        string          `json:"currency"`
-	Instrument      string          `json:"instrument"`
-	OrderSide       string          `json:"orderSide"`
-	OrderType       string          `json:"ordertype"`
-	CreationTime    time.Time       `json:"creationTime"`
-	Status          string          `json:"status"`
-	ErrorMessage    string          `json:"errorMessage"`
-	Price           float64         `json:"price"`
-	Volume          float64         `json:"volume"`
-	OpenVolume      float64         `json:"openVolume"`
-	ClientRequestID string          `json:"clientRequestId"`
-	Trades          []TradeResponse `json:"trades"`
-}
+// type Order struct {
+// 	ID              int64           `json:"id"`
+// 	Currency        string          `json:"currency"`
+// 	Instrument      string          `json:"instrument"`
+// 	OrderSide       string          `json:"orderSide"`
+// 	OrderType       string          `json:"ordertype"`
+// 	CreationTime    time.Time       `json:"creationTime"`
+// 	Status          string          `json:"status"`
+// 	ErrorMessage    string          `json:"errorMessage"`
+// 	Price           float64         `json:"price"`
+// 	Volume          float64         `json:"volume"`
+// 	OpenVolume      float64         `json:"openVolume"`
+// 	ClientRequestID string          `json:"clientRequestId"`
+// 	Trades          []TradeResponse `json:"trades"`
+// }
 
 // TradeResponse holds trade information
 type TradeResponse struct {
@@ -166,24 +166,11 @@ type TradeHistoryData struct {
 	LiquidityType string    `json:"liquidityType"`
 }
 
-// OrderData stores data for new order created
-type OrderData struct {
-	OrderID      string    `json:"orderId"`
-	MarketID     string    `json:"marketId"`
-	Side         string    `json:"side"`
-	Type         string    `json:"type"`
-	CreationTime time.Time `json:"creationTime"`
-	Price        float64   `json:"price,string"`
-	Amount       float64   `json:"amount,string"`
-	OpenAmount   float64   `json:"openAmount,string"`
-	Status       string    `json:"status"`
-}
-
 // CancelOrderResp stores data for cancelled orders
-type CancelOrderResp struct {
-	OrderID       string `json:"orderId"`
-	ClientOrderID string `json:"clientOrderId"`
-}
+// type CancelOrderResp struct {
+// 	OrderID       string `json:"orderId"`
+// 	ClientOrderID string `json:"clientOrderId"`
+// }
 
 // PaymentDetails stores payment address
 type PaymentDetails struct {

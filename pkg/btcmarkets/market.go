@@ -23,11 +23,11 @@ func stringInArray(s string, a []string) bool {
 
 // MarketService is an interface for interfacing with
 // the BTCMarkets Markets API
-type MarketService interface {
-	AllMarkets() ([]Market, error)
-	GetMarketTicker(marketID string) (*Ticker, error)
-	GetMarketTrades(marketID string) ([]Trade, error)
-}
+// type MarketService interface {
+// 	AllMarkets() ([]Market, error)
+// 	GetMarketTicker(marketID string) (*Ticker, error)
+// 	GetMarketTrades(marketID string) ([]Trade, error)
+// }
 
 // MarketServiceOp struct is used to perform Market API
 // Operation on BTCMarkets via the BTCMClient Market Interface
