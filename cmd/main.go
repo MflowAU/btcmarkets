@@ -80,9 +80,16 @@ func main() {
 	// }
 	// fmt.Printf("%+v", cao)
 
-	geto, err := c.Order.GetOrder("5251457662")
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	fmt.Printf("%+v", geto)
+	// geto, err := c.Order.GetOrder("5251457662")
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
+	// fmt.Printf("%+v", geto)
+
+	// no, err := c.Order.PlaceNewOrder("BTC-AUD", 0.01, 1, "Limit", "Bid", 0.0, 0.0, "", false, "", "")
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
+	// fmt.Printf("%+v", no)
+
 }
