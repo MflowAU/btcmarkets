@@ -126,7 +126,7 @@ func (c *BTCMClient) Do(req *http.Request, v interface{}) (*http.Response, error
 	return resp, err
 }
 
-// DoAuthenticated makes API requeßst and return the API Response
+// DoAuthenticated makes API request and return the API Response
 func (c *BTCMClient) DoAuthenticated(req *http.Request, data, result interface{}) (*http.Response, error) {
 	t := strconv.FormatInt(time.Now().UTC().UnixNano()/1000000, 10)
 	p := req.URL.Path
