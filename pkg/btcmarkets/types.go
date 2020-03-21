@@ -244,32 +244,11 @@ type ReportData struct {
 	Format       string    `json:"format"`
 }
 
-// BatchPlaceData stores data for placed batch orders
-type BatchPlaceData struct {
-	OrderID       string    `json:"orderId"`
-	MarketID      string    `json:"marketId"`
-	Side          string    `json:"side"`
-	Type          string    `json:"type"`
-	CreationTime  time.Time `json:"creationTime"`
-	Price         float64   `json:"price,string"`
-	Amount        float64   `json:"amount,string"`
-	OpenAmount    float64   `json:"openAmount,string"`
-	Status        string    `json:"status"`
-	ClientOrderID string    `json:"clientOrderId"`
-}
-
 // UnprocessedBatchResp stores data for unprocessed response
 type UnprocessedBatchResp struct {
 	Code      string `json:"code"`
 	Message   string `json:"message"`
 	RequestID string `json:"requestId"`
-}
-
-// BatchPlaceCancelResponse stores place and cancel batch data
-type BatchPlaceCancelResponse struct {
-	PlacedOrders      []BatchPlaceData       `json:"placeOrders"`
-	CancelledOrders   []CancelOrderResp      `json:"cancelOrders"`
-	UnprocessedOrders []UnprocessedBatchResp `json:"unprocessedRequests"`
 }
 
 // BatchTradeResponse stores the trades from batchtrades
@@ -299,27 +278,6 @@ type WithdrawRequestAUD struct {
 	AccountNumber string `json:"accountNumber"`
 	BankName      string `json:"bankName"`
 	BSBNumber     string `json:"bsbNumber"`
-}
-
-// CancelBatch stores data for batch cancel request
-type CancelBatch struct {
-	OrderID       string `json:"orderId,omitempty"`
-	ClientOrderID string `json:"clientOrderId,omitempty"`
-}
-
-// PlaceBatch stores data for place batch request
-type PlaceBatch struct {
-	MarketID      string  `json:"marketId"`
-	Price         float64 `json:"price"`
-	Amount        float64 `json:"amount"`
-	OrderType     string  `json:"type"`
-	Side          string  `json:"side"`
-	TriggerPrice  float64 `json:"triggerPrice,omitempty"`
-	TriggerAmount float64 `json:"triggerAmount,omitempty"`
-	TimeInForce   string  `json:"timeInForce,omitempty"`
-	PostOnly      bool    `json:"postOnly,omitempty"`
-	SelfTrade     string  `json:"selfTrade,omitempty"`
-	ClientOrderID string  `json:"clientOrderId,omitempty"`
 }
 
 // PlaceOrderMethod stores data for place request
