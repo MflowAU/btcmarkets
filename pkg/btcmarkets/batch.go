@@ -3,6 +3,8 @@ package btcmarkets
 import (
 	"errors"
 	"net/http"
+	"path"
+	"strings"
 	"time"
 )
 
@@ -93,5 +95,44 @@ func (b *BatchOrderServiceOp) BatchPlaceCancelOrders(cancelOrders []CancelBatch,
 	if err != nil {
 		return resp, err
 	}
+	return resp, nil
+}
+
+// GetBatchOrders gets batch trades
+func (b *BatchOrderServiceOp) GetBatchOrders(ids []string) (BatchTradeResponse, error) {
+	var resp BatchTradeResponse
+	if len(ids) > 50 {
+		return resp, errors.New("batchtrades can only handle 50 ids at a time")
+	}
+	marketIDs := strings.Join(ids, ",")
+
+	req, err := b.client.NewRequest(http.MethodGet, path.Join(btcMarketsBatchOrders, marketIDs), nil)
+	if err != nil {
+		return resp, err
+	}
+
+	_, err = b.client.DoAuthenticated(req, nil, &resp)
+	if err != nil {
+		return resp, err
+	}
+
+	return resp, nil
+}
+
+// CancelBatchOrders cancels given ids
+func (b *BatchOrderServiceOp) CancelBatchOrders(ids []string) (BatchCancelResponse, error) {
+	var resp BatchCancelResponse
+	marketIDs := strings.Join(ids, ",")
+
+	req, err := b.client.NewRequest(http.MethodDelete, path.Join(btcMarketsBatchOrders, marketIDs), nil)
+	if err != nil {
+		return resp, err
+	}
+
+	_, err = b.client.DoAuthenticated(req, nil, &resp)
+	if err != nil {
+		return resp, err
+	}
+
 	return resp, nil
 }
