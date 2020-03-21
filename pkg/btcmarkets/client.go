@@ -28,6 +28,8 @@ type BTCMClient struct {
 	// Market MarketService
 	Market MarketServiceOp
 	Order  OrderServiceOp
+	Batch  BatchOrderServiceOp
+	Trade  TradeHistoryServiceOp
 }
 
 // ServerTime holds the BTCMarket Server time returned after making
