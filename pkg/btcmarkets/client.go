@@ -26,10 +26,11 @@ type BTCMClient struct {
 
 	// Services used for communicating with the API
 	// Market MarketService
-	Market MarketServiceOp
-	Order  OrderServiceOp
-	Batch  BatchOrderServiceOp
-	Trade  TradeHistoryServiceOp
+	Market         MarketServiceOp
+	Order          OrderServiceOp
+	Batch          BatchOrderServiceOp
+	Trade          TradeHistoryServiceOp
+	FundManagement FundManagementServiceOp
 }
 
 // ServerTime holds the BTCMarket Server time returned after making
@@ -65,6 +66,8 @@ func NewBTCMClient(apiKey, apiSecret string) (*BTCMClient, error) {
 	// c.Market = &MarketServiceOp{client: c}
 	c.Market = MarketServiceOp{client: c}
 	c.Order = OrderServiceOp{client: c}
+	c.Batch = BatchOrderServiceOp{client: c}
+	c.FundManagement = FundManagementServiceOp{client: c}
 
 	return c, nil
 }
