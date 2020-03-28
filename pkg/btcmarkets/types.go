@@ -153,68 +153,11 @@ type AccountData struct {
 	Locked    float64 `json:"locked,string"`
 }
 
-// TradeHistoryData stores data of past trades
-type TradeHistoryData struct {
-	ID            string    `json:"id"`
-	MarketID      string    `json:"marketId"`
-	Timestamp     time.Time `json:"timestamp"`
-	Price         float64   `json:"price,string"`
-	Amount        float64   `json:"amount,string"`
-	Side          string    `json:"side"`
-	Fee           float64   `json:"fee,string"`
-	OrderID       string    `json:"orderId"`
-	LiquidityType string    `json:"liquidityType"`
-}
-
 // CancelOrderResp stores data for cancelled orders
 // type CancelOrderResp struct {
 // 	OrderID       string `json:"orderId"`
 // 	ClientOrderID string `json:"clientOrderId"`
 // }
-
-// PaymentDetails stores payment address
-type PaymentDetails struct {
-	Address string `json:"address"`
-}
-
-// TransferData stores data from asset transfers
-type TransferData struct {
-	ID             string         `json:"id"`
-	AssetName      string         `json:"assetName"`
-	Amount         float64        `json:"amount,string"`
-	RequestType    string         `json:"type"`
-	CreationTime   time.Time      `json:"creationTime"`
-	Status         string         `json:"status"`
-	Description    string         `json:"description"`
-	Fee            float64        `json:"fee,string"`
-	LastUpdate     string         `json:"lastUpdate"`
-	PaymentDetails PaymentDetails `json:"paymentDetail"`
-}
-
-// DepositAddress stores deposit address data
-type DepositAddress struct {
-	Address   string `json:"address"`
-	AssetName string `json:"assetName"`
-}
-
-// WithdrawalFeeData stores data for fees
-type WithdrawalFeeData struct {
-	AssetName string  `json:"assetName"`
-	Fee       float64 `json:"fee,string"`
-}
-
-// AssetData stores data for given asset
-type AssetData struct {
-	AssetName           string  `json:"assetName"`
-	MinDepositAmount    float64 `json:"minDepositAmount,string"`
-	MaxDepositAmount    float64 `json:"maxDepositAmount,string"`
-	DepositDecimals     float64 `json:"depositDecimals,string"`
-	MinWithdrawalAmount float64 `json:"minWithdrawalAmount,string"`
-	MaxWithdrawalAmount float64 `json:"maxWithdrawalAmount,string"`
-	WithdrawalDecimals  float64 `json:"withdrawalDecimals,string"`
-	WithdrawalFee       float64 `json:"withdrawalFee,string"`
-	DepositFee          float64 `json:"depositFee,string"`
-}
 
 // TransactionData stores data from past transactions
 type TransactionData struct {
@@ -263,31 +206,9 @@ type BatchCancelResponse struct {
 	UnprocessedRequests []UnprocessedBatchResp `json:"unprocessedRequests"`
 }
 
-// WithdrawRequestCrypto is a generalized withdraw request type
-type WithdrawRequestCrypto struct {
-	Amount   int64  `json:"amount"`
-	Currency string `json:"currency"`
-	Address  string `json:"address"`
-}
-
-// WithdrawRequestAUD is a generalized withdraw request type
-type WithdrawRequestAUD struct {
-	Amount        int64  `json:"amount"`
-	Currency      string `json:"currency"`
-	AccountName   string `json:"accountName"`
-	AccountNumber string `json:"accountNumber"`
-	BankName      string `json:"bankName"`
-	BSBNumber     string `json:"bsbNumber"`
-}
-
 // PlaceOrderMethod stores data for place request
 type PlaceOrderMethod struct {
 	PlaceOrder PlaceBatch `json:"placeOrder,omitempty"`
-}
-
-// CancelOrderMethod stores data for Cancel request
-type CancelOrderMethod struct {
-	CancelOrder CancelBatch `json:"cancelOrder,omitempty"`
 }
 
 // TradingFeeData stores trading fee data
