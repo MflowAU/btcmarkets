@@ -50,11 +50,11 @@ func main() {
 	// }
 	// fmt.Printf("%+v \n\n\n", orders)
 
-	o, err := c.Order.ListOrders("BTC-AUD", "close", 0, 0, 10)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	fmt.Printf("%+v \n\n\n", o)
+	// o, err := c.Order.ListOrders("BTC-AUD", "close", 0, 0, 10)
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
+	// fmt.Printf("%+v \n\n\n", o)
 
 	// cno, err := c.Order.CancelOrder("5251295067")
 	// if err != nil {
@@ -86,10 +86,28 @@ func main() {
 	// }
 	// fmt.Printf("%+v \n\n\n", no)
 
-	wd, err := c.FundManagement.ListWithdrawls(0, 78234876, 10)
+	// wd, err := c.FundManagement.ListWithdrawls(0, 78234876, 10)
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
+	// fmt.Printf("%+v \n\n\n", wd)
+
+	lwd, err := c.FundManagement.ListTransfers(0, 78234876, 10)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	fmt.Printf("%+v \n\n\n", wd)
+	fmt.Printf("%+v \n\n\n", lwd)
+
+	gt, err := c.FundManagement.GetTransfers("931809710")
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Printf("%+v \n\n\n", gt)
+
+	da, err := c.FundManagement.GetDepositeAddress("ltc", 78234876, 0, 10)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Printf("%+v \n\n\n", da)
 
 }
