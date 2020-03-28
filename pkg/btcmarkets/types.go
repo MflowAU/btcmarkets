@@ -210,16 +210,3 @@ type BatchCancelResponse struct {
 type PlaceOrderMethod struct {
 	PlaceOrder PlaceBatch `json:"placeOrder,omitempty"`
 }
-
-// TradingFeeData stores trading fee data
-type TradingFeeData struct {
-	MakerFeeRate float64 `json:"makerFeeRate,string"`
-	TakerFeeRate float64 `json:"takerFeeRate,string"`
-	MarketID     string  `json:"marketId"`
-}
-
-// TradingFeeResponse stores trading fee data
-type TradingFeeResponse struct {
-	MonthlyVolume float64          `json:"volume30Day,string"`
-	FeeByMarkets  []TradingFeeData `json:"FeeByMarkets"`
-}

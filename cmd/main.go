@@ -92,33 +92,39 @@ func main() {
 	// }
 	// fmt.Printf("%+v \n\n\n", wd)
 
-	lwd, err := c.FundManagement.ListTransfers(0, 78234876, 10)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	fmt.Printf("%+v \n\n\n", lwd)
+	// lwd, err := c.FundManagement.ListTransfers(0, 78234876, 10)
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
+	// fmt.Printf("%+v \n\n\n", lwd)
 
-	gt, err := c.FundManagement.GetTransfers("931809710")
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	fmt.Printf("%+v \n\n\n", gt)
+	// gt, err := c.FundManagement.GetTransfers("931809710")
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
+	// fmt.Printf("%+v \n\n\n", gt)
 
-	da, err := c.FundManagement.GetDepositeAddress("ltc", 78234876, 0, 10)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	fmt.Printf("%+v \n\n\n", da)
+	// da, err := c.FundManagement.GetDepositeAddress("ltc", 78234876, 0, 10)
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
+	// fmt.Printf("%+v \n\n\n", da)
 
-	wf, err := c.FundManagement.GetWithdrawalFees()
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	fmt.Printf("%+v \n\n\n", wf)
+	// wf, err := c.FundManagement.GetWithdrawalFees()
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
+	// fmt.Printf("%+v \n\n\n", wf)
 
-	la, err := c.FundManagement.ListAssets()
+	// la, err := c.FundManagement.ListAssets()
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
+	// fmt.Printf("%+v \n\n\n", la)
+
+	tf, err := c.Account.GetTradingFees()
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	fmt.Printf("%+v \n\n\n", la)
+	fmt.Printf("%+v \n\n\n", tf)
 }
