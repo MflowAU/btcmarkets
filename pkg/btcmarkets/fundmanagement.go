@@ -55,7 +55,7 @@ type DepositAddress struct {
 	AssetName string `json:"assetName"`
 }
 
-// WithdrawalFeeData stores data for fees
+// WithdrawalFee stores data for fees
 type WithdrawalFee struct {
 	AssetName string  `json:"assetName"`
 	Fee       float64 `json:"fee,string"`
