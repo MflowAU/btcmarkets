@@ -115,4 +115,10 @@ func main() {
 		fmt.Println(err.Error())
 	}
 	fmt.Printf("%+v \n\n\n", wf)
+
+	la, err := c.FundManagement.ListAssets()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Printf("%+v \n\n\n", la)
 }
