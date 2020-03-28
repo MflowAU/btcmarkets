@@ -32,6 +32,7 @@ type BTCMClient struct {
 	Trade          TradeHistoryServiceOp
 	FundManagement FundManagementServiceOp
 	Account        AccountServiceOp
+	Report         ReportServiceOps
 }
 
 // ServerTime holds the BTCMarket Server time returned after making
@@ -70,6 +71,7 @@ func NewBTCMClient(apiKey, apiSecret string) (*BTCMClient, error) {
 	c.Batch = BatchOrderServiceOp{client: c}
 	c.FundManagement = FundManagementServiceOp{client: c}
 	c.Account = AccountServiceOp{client: c}
+	c.Report = ReportServiceOps{client: c}
 
 	return c, nil
 }
