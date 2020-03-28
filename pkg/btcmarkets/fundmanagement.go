@@ -1,10 +1,12 @@
 package btcmarkets
 
 import (
+	"errors"
 	"net/http"
 	"net/url"
 	"path"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -42,6 +44,15 @@ type WithdrawData struct {
 	Fee            float64        `json:"fee,string"`
 	LastUpdate     string         `json:"lastUpdate"`
 	PaymentDetails PaymentDetails `json:"paymentDetail,omitempty"`
+}
+
+// TransferData convinience datatype to make code more readable
+type TransferData WithdrawData
+
+// DepositAddress stores deposit address data
+type DepositAddress struct {
+	Address   string `json:"address"`
+	AssetName string `json:"assetName"`
 }
 
 // FundManagementServiceOp performs Fundmanagement operations on BTCMarkets
@@ -145,9 +156,6 @@ func (f *FundManagementServiceOp) ListDeposits(before, after int64, limit int32)
 	if limit > 0 {
 		params.Add("limit", strconv.Itoa(int(limit)))
 	}
-	if limit > 0 {
-		params.Add("limit", strconv.Itoa(int(limit)))
-	}
 
 	req, err := f.client.NewRequest(http.MethodGet, path.Join(btcMarketsDeposits, "?"+params.Encode()), nil)
 	if err != nil {
@@ -159,4 +167,105 @@ func (f *FundManagementServiceOp) ListDeposits(before, after int64, limit int32)
 		return wd, err
 	}
 	return wd, nil
+}
+
+// GetDeposit This API returns a deposit by id.
+func (f *FundManagementServiceOp) GetDeposit(orderID string) (WithdrawData, error) {
+	// TODO: WithdrawData may be incompatible for this reponse data received from this endpoint
+	var wd WithdrawData
+
+	req, err := f.client.NewRequest(http.MethodGet, path.Join(btcMarketsDeposits, orderID), nil)
+	if err != nil {
+		return wd, err
+	}
+
+	_, err = f.client.DoAuthenticated(req, nil, &wd)
+	if err != nil {
+		return wd, err
+	}
+
+	return wd, nil
+}
+
+// ListTransfers A transfer record refers either to a deposit or withdraw and this API returns list of transfers covering both depoists and withdrawals. This API supports pagination
+func (f *FundManagementServiceOp) ListTransfers(before, after int64, limit int32) ([]TransferData, error) {
+	var t []TransferData
+
+	if (before > 0) && (after >= 0) {
+		return nil, errors.New("BTCMarkets only supports either before or after, not both")
+	}
+
+	params := url.Values{}
+	if before > 0 {
+		params.Set("before", strconv.FormatInt(before, 10))
+	}
+	if after >= 0 {
+		params.Set("after", strconv.FormatInt(after, 10))
+	}
+	if limit > 0 {
+		params.Add("limit", strconv.Itoa(int(limit)))
+	}
+
+	req, err := f.client.NewRequest(http.MethodGet, path.Join(btcMarketsTransfers, "?"+params.Encode()), nil)
+	if err != nil {
+		return t, err
+	}
+
+	_, err = f.client.DoAuthenticated(req, nil, &t)
+	if err != nil {
+		return t, err
+	}
+
+	return t, nil
+}
+
+// GetTransfers This API retruns either deposit or withdrawal by id
+func (f *FundManagementServiceOp) GetTransfers(orderID string) (WithdrawData, error) {
+	var wd WithdrawData
+
+	req, err := f.client.NewRequest(http.MethodGet, path.Join(btcMarketsTransfers, orderID), nil)
+	if err != nil {
+		return wd, err
+	}
+
+	_, err = f.client.DoAuthenticated(req, nil, &wd)
+	if err != nil {
+		return wd, err
+	}
+
+	return wd, nil
+}
+
+// GetDepositeAddress returns deposit address for the given asset
+// Note: The documentation at https://api.btcmarkets.net/doc/v3#tag/Fund-Management-APIs/paths/~1v3~1addresses/get is wrong
+func (f *FundManagementServiceOp) GetDepositeAddress(assetName string, before, after, limit int64) (DepositAddress, error) {
+	var da DepositAddress
+
+	if (before > 0) && (after > 0) {
+		return da, errors.New("BTCMarkets only supports either before or after, not both")
+	}
+	params := url.Values{}
+	assetName = strings.ToUpper(assetName) //API expects assetName has to be uppercase
+	params.Set("assetName", assetName)
+	if before > 0 {
+		params.Set("before", strconv.FormatInt(before, 10))
+	}
+	if after >= 0 {
+		params.Set("after", strconv.FormatInt(after, 10))
+	}
+	if limit > 0 {
+		params.Set("limit", strconv.FormatInt(limit, 10))
+	}
+
+	req, err := f.client.NewRequest(http.MethodGet, path.Join(btcMarketsAddresses, "?"+params.Encode()), nil)
+	if err != nil {
+		return da, err
+	}
+
+	_, err = f.client.DoAuthenticated(req, nil, &da)
+	if err != nil {
+		return da, err
+	}
+
+	return da, nil
 }
