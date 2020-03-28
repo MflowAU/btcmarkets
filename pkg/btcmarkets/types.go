@@ -159,19 +159,6 @@ type AccountData struct {
 // 	ClientOrderID string `json:"clientOrderId"`
 // }
 
-// TransactionData stores data from past transactions
-type TransactionData struct {
-	ID           string    `json:"id"`
-	CreationTime time.Time `json:"creationTime"`
-	Description  string    `json:"description"`
-	AssetName    string    `json:"assetName"`
-	Amount       float64   `json:"amount,string"`
-	Balance      float64   `json:"balance,string"`
-	FeeType      string    `json:"type"`
-	RecordType   string    `json:"recordType"`
-	ReferrenceID string    `json:"referrenceId"`
-}
-
 // CreateReportResp stores data for created report
 type CreateReportResp struct {
 	ReportID string `json:"reportId"`
