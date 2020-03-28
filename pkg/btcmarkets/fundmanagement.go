@@ -55,6 +55,12 @@ type DepositAddress struct {
 	AssetName string `json:"assetName"`
 }
 
+// WithdrawalFeeData stores data for fees
+type WithdrawalFee struct {
+	AssetName string  `json:"assetName"`
+	Fee       float64 `json:"fee,string"`
+}
+
 // FundManagementServiceOp performs Fundmanagement operations on BTCMarkets
 type FundManagementServiceOp struct {
 	client *BTCMClient
@@ -268,4 +274,22 @@ func (f *FundManagementServiceOp) GetDepositeAddress(assetName string, before, a
 	}
 
 	return da, nil
+}
+
+// GetWithdrawalFees Returns fees associated with withdrawals.
+// This API is public and does not require authentication as the fees as system wide and published on the website
+func (f *FundManagementServiceOp) GetWithdrawalFees() ([]WithdrawalFee, error) {
+	var wf []WithdrawalFee
+
+	req, err := f.client.NewRequest(http.MethodGet, btcMarketsWithdrawalFees, nil)
+	if err != nil {
+		return wf, err
+	}
+
+	_, err = f.client.Do(req, &wf)
+	if err != nil {
+		return wf, err
+	}
+
+	return wf, nil
 }

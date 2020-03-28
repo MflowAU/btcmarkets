@@ -110,4 +110,9 @@ func main() {
 	}
 	fmt.Printf("%+v \n\n\n", da)
 
+	wf, err := c.FundManagement.GetWithdrawalFees()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Printf("%+v \n\n\n", wf)
 }

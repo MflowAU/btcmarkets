@@ -159,12 +159,6 @@ type AccountData struct {
 // 	ClientOrderID string `json:"clientOrderId"`
 // }
 
-// WithdrawalFeeData stores data for fees
-type WithdrawalFeeData struct {
-	AssetName string  `json:"assetName"`
-	Fee       float64 `json:"fee,string"`
-}
-
 // AssetData stores data for given asset
 type AssetData struct {
 	AssetName           string  `json:"assetName"`
