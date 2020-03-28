@@ -159,12 +159,6 @@ type AccountData struct {
 // 	ClientOrderID string `json:"clientOrderId"`
 // }
 
-// DepositAddress stores deposit address data
-type DepositAddress struct {
-	Address   string `json:"address"`
-	AssetName string `json:"assetName"`
-}
-
 // WithdrawalFeeData stores data for fees
 type WithdrawalFeeData struct {
 	AssetName string  `json:"assetName"`
