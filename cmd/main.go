@@ -122,9 +122,21 @@ func main() {
 	// }
 	// fmt.Printf("%+v \n\n\n", la)
 
-	tf, err := c.Account.GetTradingFees()
+	// tf, err := c.Account.GetTradingFees()
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
+	// fmt.Printf("%+v \n\n\n", tf)
+
+	// gb, err := c.Account.GetBalances()
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
+	// fmt.Printf("%+v \n\n\n", gb)
+
+	lt, err := c.Account.ListTransactions("btc", 0, 1, 10)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	fmt.Printf("%+v \n\n\n", tf)
+	fmt.Printf("%+v \n\n\n", lt)
 }
