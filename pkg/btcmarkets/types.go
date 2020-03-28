@@ -159,19 +159,6 @@ type AccountData struct {
 // 	ClientOrderID string `json:"clientOrderId"`
 // }
 
-// AssetData stores data for given asset
-type AssetData struct {
-	AssetName           string  `json:"assetName"`
-	MinDepositAmount    float64 `json:"minDepositAmount,string"`
-	MaxDepositAmount    float64 `json:"maxDepositAmount,string"`
-	DepositDecimals     float64 `json:"depositDecimals,string"`
-	MinWithdrawalAmount float64 `json:"minWithdrawalAmount,string"`
-	MaxWithdrawalAmount float64 `json:"maxWithdrawalAmount,string"`
-	WithdrawalDecimals  float64 `json:"withdrawalDecimals,string"`
-	WithdrawalFee       float64 `json:"withdrawalFee,string"`
-	DepositFee          float64 `json:"depositFee,string"`
-}
-
 // TransactionData stores data from past transactions
 type TransactionData struct {
 	ID           string    `json:"id"`

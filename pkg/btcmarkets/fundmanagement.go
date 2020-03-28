@@ -61,6 +61,19 @@ type WithdrawalFee struct {
 	Fee       float64 `json:"fee,string"`
 }
 
+// AssetData stores data for given asset
+type AssetData struct {
+	AssetName           string  `json:"assetName"`
+	MinDepositAmount    float64 `json:"minDepositAmount,string"`
+	MaxDepositAmount    float64 `json:"maxDepositAmount,string"`
+	DepositDecimals     float64 `json:"depositDecimals,string"`
+	MinWithdrawalAmount float64 `json:"minWithdrawalAmount,string"`
+	MaxWithdrawalAmount float64 `json:"maxWithdrawalAmount,string"`
+	WithdrawalDecimals  float64 `json:"withdrawalDecimals,string"`
+	WithdrawalFee       float64 `json:"withdrawalFee,string"`
+	DepositFee          float64 `json:"depositFee,string"`
+}
+
 // FundManagementServiceOp performs Fundmanagement operations on BTCMarkets
 type FundManagementServiceOp struct {
 	client *BTCMClient
@@ -292,4 +305,31 @@ func (f *FundManagementServiceOp) GetWithdrawalFees() ([]WithdrawalFee, error) {
 	}
 
 	return wf, nil
+}
+
+// ListAssets Retrieves list of assets including configuration
+//
+// assetName: name of the asset that us used for trading or investment
+// minDepositAmount: minimum amount to deposit
+// maxDepositAmount: maximum amount to deposit
+// depositFee: deposit fee
+// depositDecimals: number of decimal places allowed for deposits
+// minWithdrawalAmount: minimum amount to withdraw
+// maxWithdrawalAmount: maximum amount to withdraw
+// withdrawalFee: withdrawal fee
+// withdrawalDecimals: number of decimal places allowed for withdrawals
+func (f *FundManagementServiceOp) ListAssets() ([]AssetData, error) {
+	var la []AssetData
+
+	req, err := f.client.NewRequest(http.MethodGet, btcMarketsAssets, nil)
+	if err != nil {
+		return la, err
+	}
+
+	_, err = f.client.Do(req, &la)
+	if err != nil {
+		return la, err
+	}
+
+	return la, nil
 }
