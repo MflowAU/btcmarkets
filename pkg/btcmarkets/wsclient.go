@@ -4,10 +4,14 @@ import (
 	"net/url"
 )
 
-type SubscribeMessage struct {
+// WSSubscribeMessageAuth Subscribe message to initiate WebSocket Connection
+type WSSubscribeMessageAuth struct {
 	Channels    []string `json:"channels"`
+	Key         string   `json:"key"`
 	MarketIds   []string `json:"marketIds"`
 	MessageType string   `json:"messageType"`
+	Signature   string   `json:"signature"`
+	Timestamp   string   `json:"timestamp"`
 }
 
 // BTCMWSTickEvent The tick event is published every time lastPrice,
@@ -107,9 +111,7 @@ type BTCMWSClient struct {
 	BaseURL *url.URL
 }
 
-// BTCMWSClientConfig Config to initialize the websocket connection
-type BTCMWSClientConfig struct {
-	Url       *url.URL
-	Channels  []string
-	MarketIds []string
+// NewBTCMWSClient Factory function to generate a websocket connection to BTCMarket
+func NewBTCMWSClient(sm WSSubscribeMessageAuth) {
+
 }
