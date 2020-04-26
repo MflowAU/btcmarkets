@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"time"
 
 	"github.com/MflowAU/btcmarkets/pkg/btcmarkets"
 )
@@ -134,9 +136,47 @@ func main() {
 	// }
 	// fmt.Printf("%+v \n\n\n", gb)
 
-	lt, err := c.Account.ListTransactions("btc", 0, 1, 10)
+	// lt, err := c.Account.ListTransactions("btc", 0, 1, 10)
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
+	// fmt.Println("List Transactions...")
+	// fmt.Printf("%+v \n\n\n", lt)
+
+	subm := btcmarkets.WSSubscribeMessageAuth{
+		MessageType: "subscribe",
+		MarketIds: []string{
+			"BTC-AUD",
+			"LTC-AUD",
+			"XRP-AUD",
+			"ETH-AUD",
+			"ETC-AUD",
+			"OMG-AUD",
+			"GNT-AUD",
+			"XLM-AUD",
+		},
+		Channels: []string{
+			"trade",
+			"tick",
+			// "orderbook",
+			// "orderbookUpdate",
+			// "heartbeat",
+		},
+	}
+	ctx, ctxCancel := context.WithCancel(context.Background())
+
+	ch, err := c.WebSocket.Subscribe(ctx, subm)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	fmt.Printf("%+v \n\n\n", lt)
+
+	go func() {
+		time.Sleep(time.Second * 10)
+		ctxCancel()
+	}()
+
+	for i := 0; i < 50; i++ {
+		fmt.Println(string(<-ch))
+	}
+
 }

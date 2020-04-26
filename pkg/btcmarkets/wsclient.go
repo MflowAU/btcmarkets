@@ -1,18 +1,12 @@
 package btcmarkets
 
 import (
+	"fmt"
 	"net/url"
-)
 
-// WSSubscribeMessageAuth Subscribe message to initiate WebSocket Connection
-type WSSubscribeMessageAuth struct {
-	Channels    []string `json:"channels"`
-	Key         string   `json:"key"`
-	MarketIds   []string `json:"marketIds"`
-	MessageType string   `json:"messageType"`
-	Signature   string   `json:"signature"`
-	Timestamp   string   `json:"timestamp"`
-}
+	"github.com/gorilla/websocket"
+	"golang.org/x/net/context"
+)
 
 // BTCMWSTickEvent The tick event is published every time lastPrice,
 // bestBid or bestAsk is updated for a market which is the result of
@@ -104,14 +98,62 @@ type BTCMWSErrorEvent struct {
 	MessageType string `json:"messageType"`
 }
 
+// WSSubscribeMessageAuth Subscribe message to initiate WebSocket Connection
+type WSSubscribeMessageAuth struct {
+	Channels    []string `json:"channels"`
+	Key         string   `json:"key"`
+	MarketIds   []string `json:"marketIds"`
+	MessageType string   `json:"messageType"`
+	Signature   string   `json:"signature"`
+	Timestamp   string   `json:"timestamp"`
+}
+
 // BTCMWSClient is the WebSocket Client struct
 // It embeds the BTCMClient to get access to the underlying properties
 type BTCMWSClient struct {
-	BTCMClient
 	BaseURL *url.URL
 }
 
-// NewBTCMWSClient Factory function to generate a websocket connection to BTCMarket
-func NewBTCMWSClient(sm WSSubscribeMessageAuth) {
+// WebSocketServiceOp ...
+type WebSocketServiceOp struct {
+	client *BTCMWSClient
+}
 
+// Subscribe ...
+func (ws *WebSocketServiceOp) Subscribe(ctx context.Context, m WSSubscribeMessageAuth) (chan []byte, error) {
+	wsmessages := make(chan []byte)
+
+	c, _, err := websocket.DefaultDialer.Dial(ws.client.BaseURL.String(), nil)
+
+	if err != nil {
+		fmt.Println("Error Dialing WebSocket Connection: ", err.Error())
+		return nil, err
+	}
+
+	err = c.WriteJSON(m)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+
+	go func() {
+		defer c.Close()
+		defer close(wsmessages)
+		for {
+			select {
+			case <-ctx.Done():
+				fmt.Println("Context Closed...")
+				return
+			default:
+				_, payload, err := c.ReadMessage()
+				if err != nil {
+					fmt.Println(err.Error())
+					return
+				}
+				wsmessages <- payload
+			}
+		}
+	}()
+
+	return wsmessages, nil
 }

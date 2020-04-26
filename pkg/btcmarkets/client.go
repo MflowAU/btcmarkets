@@ -32,6 +32,7 @@ type BTCMClient struct {
 	Trade          TradeHistoryServiceOp
 	FundManagement FundManagementServiceOp
 	Account        AccountServiceOp
+	WebSocket      WebSocketServiceOp
 }
 
 // ServerTime holds the BTCMarket Server time returned after making
@@ -64,12 +65,25 @@ func NewBTCMClient(apiKey, apiSecret string) (*BTCMClient, error) {
 		client:     http.DefaultClient,
 		UserAgent:  "mflow/golang-client",
 	}
+
+	// Websocket URL
+	wsu := &url.URL{
+		Scheme: "wss",
+		Host:   "socket.btcmarkets.net",
+		Path:   "/v2",
+	}
+
+	wsc := &BTCMWSClient{
+		BaseURL: wsu,
+	}
+
 	// c.Market = &MarketServiceOp{client: c}
 	c.Market = MarketServiceOp{client: c}
 	c.Order = OrderServiceOp{client: c}
 	c.Batch = BatchOrderServiceOp{client: c}
 	c.FundManagement = FundManagementServiceOp{client: c}
 	c.Account = AccountServiceOp{client: c}
+	c.WebSocket = WebSocketServiceOp{client: wsc}
 
 	return c, nil
 }
