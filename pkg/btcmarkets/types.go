@@ -5,6 +5,8 @@ import "time"
 const (
 	btcMarketsAPIURL     = "https://api.btcmarkets.net"
 	btcMarketsAPIVersion = "/v3"
+	btcMarketsWSURL      = "wss://socket.btcmarkets.net"
+	btcMarketsWSVersion  = "/v2"
 
 	// UnAuthenticated EPs
 	btcMarketsAllMarkets         = "/markets/"
