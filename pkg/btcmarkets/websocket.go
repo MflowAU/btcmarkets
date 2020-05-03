@@ -2,7 +2,8 @@ package btcmarkets
 
 import (
 	"fmt"
-	"net/url"
+	"strconv"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"golang.org/x/net/context"
@@ -98,37 +99,49 @@ type BTCMWSErrorEvent struct {
 	MessageType string `json:"messageType"`
 }
 
-// WSSubscribeMessageAuth Subscribe message to initiate WebSocket Connection
-type WSSubscribeMessageAuth struct {
+// WSSubscribeMessage Subscribe message to initiate WebSocket Connection
+type WSSubscribeMessage struct {
 	Channels    []string `json:"channels"`
-	Key         string   `json:"key"`
 	MarketIds   []string `json:"marketIds"`
 	MessageType string   `json:"messageType"`
-	Signature   string   `json:"signature"`
 	Timestamp   string   `json:"timestamp"`
+	Key         string   `json:"key"`
+	Signature   string   `json:"signature"`
 }
 
-// BTCMWSClient is the WebSocket Client struct
-// It embeds the BTCMClient to get access to the underlying properties
-type BTCMWSClient struct {
-	BaseURL *url.URL
-}
-
-// WebSocketServiceOp ...
+// WebSocketServiceOp WebSocket feed provides real-time market data covering
+//  orderbook updates, order life cycle and trades
 type WebSocketServiceOp struct {
-	client *BTCMWSClient
+	client *BTCMClient
 }
 
-// Subscribe ...
-func (ws *WebSocketServiceOp) Subscribe(ctx context.Context, m WSSubscribeMessageAuth) (chan []byte, error) {
+// Subscribe returns a channel of bytes with messages from the websocket.
+// The consumer of this method will need to handle the Implicit type Conversion
+// of the bytes returned on the channel.
+// This method needs to be called with a ContextWithCancel as first parameter to be able
+// close the websocket and a SubscribeMessage to start receiving events for the
+// specified channels and marketIds
+func (ws *WebSocketServiceOp) Subscribe(ctx context.Context, m WSSubscribeMessage) (chan []byte, error) {
 	wsmessages := make(chan []byte)
 
-	c, _, err := websocket.DefaultDialer.Dial(ws.client.BaseURL.String(), nil)
+	c, _, err := websocket.DefaultDialer.Dial(ws.client.WSURL.String(), nil)
 
 	if err != nil {
 		fmt.Println("Error Dialing WebSocket Connection: ", err.Error())
 		return nil, err
 	}
+
+	if len(ws.client.apiKey) > 0 {
+		m.Key = ws.client.apiKey
+	}
+
+	if len(ws.client.privateKey) > 0 {
+		t := strconv.FormatInt(time.Now().UTC().UnixNano()/1000000, 10)
+		m.Timestamp = t
+		strToSign := "/users/self/subscribe" + "\n" + t
+		m.Signature = ws.client.signMessage(strToSign)
+	}
+	m.MessageType = "subscribe"
 
 	err = c.WriteJSON(m)
 	if err != nil {
@@ -142,13 +155,14 @@ func (ws *WebSocketServiceOp) Subscribe(ctx context.Context, m WSSubscribeMessag
 		for {
 			select {
 			case <-ctx.Done():
-				fmt.Println("Context Closed...")
 				return
 			default:
 				_, payload, err := c.ReadMessage()
 				if err != nil {
 					fmt.Println(err.Error())
-					return
+					wsmessages <- []byte(err.Error())
+					// return
+					// TODO: check if this code block should return on error
 				}
 				wsmessages <- payload
 			}
