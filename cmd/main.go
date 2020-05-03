@@ -136,14 +136,14 @@ func main() {
 	// }
 	// fmt.Printf("%+v \n\n\n", gb)
 
-	// lt, err := c.Account.ListTransactions("btc", 0, 1, 10)
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// }
-	// fmt.Println("List Transactions...")
-	// fmt.Printf("%+v \n\n\n", lt)
+	lt, err := c.Account.ListTransactions("btc", 0, 1, 10)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Println("List Transactions...")
+	fmt.Printf("%+v \n\n\n", lt)
 
-	subm := btcmarkets.WSSubscribeMessageAuth{
+	subm := btcmarkets.WSSubscribeMessage{
 		MessageType: "subscribe",
 		MarketIds: []string{
 			"BTC-AUD",
@@ -158,6 +158,7 @@ func main() {
 		Channels: []string{
 			"trade",
 			"tick",
+			"orderChange",
 			// "orderbook",
 			// "orderbookUpdate",
 			// "heartbeat",
@@ -178,5 +179,5 @@ func main() {
 	for i := 0; i < 50; i++ {
 		fmt.Println(string(<-ch))
 	}
-
+	fmt.Println("Done...")
 }
