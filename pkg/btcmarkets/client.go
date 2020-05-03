@@ -21,6 +21,7 @@ type BTCMClient struct {
 	apiKey     string
 	privateKey []byte
 	BaseURL    *url.URL
+	WSURL      *url.URL
 	client     *http.Client
 	UserAgent  string
 
@@ -41,7 +42,7 @@ type ServerTime struct {
 	Timestamp string `json:"timestamp"`
 }
 
-// NewBTCMClient should return a new instance of BTCMarkets Client
+// NewBTCMClient returns a new instance of BTCMarkets Client
 func NewBTCMClient(apiKey, apiSecret string) (*BTCMClient, error) {
 	if apiKey == "" || apiSecret == "" {
 		return nil, errors.New("")
@@ -58,32 +59,27 @@ func NewBTCMClient(apiKey, apiSecret string) (*BTCMClient, error) {
 	}
 	u.Path = path.Join(u.Path, btcMarketsAPIVersion)
 
+	wss, err := url.Parse(btcMarketsWSURL)
+	if err != nil {
+		return nil, err
+	}
+	wss.Path = path.Join(wss.Path, btcMarketsWSVersion)
+
 	c := &BTCMClient{
 		apiKey:     apiKey,
 		privateKey: p,
 		BaseURL:    u,
+		WSURL:      wss,
 		client:     http.DefaultClient,
 		UserAgent:  "mflow/golang-client",
 	}
-
-	// Websocket URL
-	wsu := &url.URL{
-		Scheme: "wss",
-		Host:   "socket.btcmarkets.net",
-		Path:   "/v2",
-	}
-
-	wsc := &BTCMWSClient{
-		BaseURL: wsu,
-	}
-
 	// c.Market = &MarketServiceOp{client: c}
 	c.Market = MarketServiceOp{client: c}
 	c.Order = OrderServiceOp{client: c}
 	c.Batch = BatchOrderServiceOp{client: c}
 	c.FundManagement = FundManagementServiceOp{client: c}
 	c.Account = AccountServiceOp{client: c}
-	c.WebSocket = WebSocketServiceOp{client: wsc}
+	c.WebSocket = WebSocketServiceOp{client: c}
 
 	return c, nil
 }
@@ -151,7 +147,6 @@ func (c *BTCMClient) Do(req *http.Request, v interface{}) (*http.Response, error
 func (c *BTCMClient) DoAuthenticated(req *http.Request, data, result interface{}) (*http.Response, error) {
 	t := strconv.FormatInt(time.Now().UTC().UnixNano()/1000000, 10)
 	p := req.URL.Path
-	h := hmac.New(sha512.New, c.privateKey)
 
 	switch data.(type) {
 	case map[string]interface{}, []interface{}:
@@ -161,19 +156,18 @@ func (c *BTCMClient) DoAuthenticated(req *http.Request, data, result interface{}
 			return nil, err
 		}
 
-		m := req.Method + p + t + strPayload
-		h.Write([]byte(m))
-		// req.Header.Add("Content-Length", strconv.Itoa(len(strPayload)))
+		m := c.signMessage(req.Method + p + t + strPayload)
+		req.Header.Add("BM-AUTH-SIGNATURE", m)
 	default:
-		m := req.Method + p + t + ""
-		h.Write([]byte(m))
+		m := c.signMessage(req.Method + p + t + "")
+		req.Header.Add("BM-AUTH-SIGNATURE", m)
+
 	}
 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept-Charset", "UTF-8")
 	req.Header.Add("BM-AUTH-APIKEY", c.apiKey)
 	req.Header.Add("BM-AUTH-TIMESTAMP", t)
-	req.Header.Add("BM-AUTH-SIGNATURE", base64.StdEncoding.EncodeToString(h.Sum(nil)))
 
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -249,4 +243,12 @@ func (c *BTCMClient) GetServerTime() (ServerTime, error) {
 		return t, err
 	}
 	return t, nil
+}
+
+// singMessage takes a string - generally a path/URI to Sign and
+// returns a base64 encoded string
+func (c *BTCMClient) signMessage(s string) string {
+	h := hmac.New(sha512.New, c.privateKey)
+	h.Write([]byte(s))
+	return base64.StdEncoding.EncodeToString(h.Sum(nil))
 }
