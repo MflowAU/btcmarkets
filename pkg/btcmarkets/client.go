@@ -42,35 +42,61 @@ type ServerTime struct {
 	Timestamp string `json:"timestamp"`
 }
 
+// ClientConfig TODO:...
+type ClientConfig struct {
+	Httpclient *http.Client
+	APIKey     string
+	APISecret  string
+	WsURL      *url.URL
+	BaseURL    *url.URL
+}
+
+func (c ClientConfig) validate() error {
+	if c.APIKey == "" || c.APISecret == "" {
+		return errors.New("Please provide API Key and API Secret")
+	}
+	return nil
+}
+
 // NewBTCMClient returns a new instance of BTCMarkets Client
-func NewBTCMClient(apiKey, apiSecret string) (*BTCMClient, error) {
-	if apiKey == "" || apiSecret == "" {
-		return nil, errors.New("")
-	}
-
-	p, err := base64.StdEncoding.DecodeString(apiSecret)
-	if err != nil {
-		return nil, errors.New("Error Decoding apiSecret")
-	}
-
-	u, err := url.Parse(btcMarketsAPIURL)
+func NewBTCMClient(conf ClientConfig) (*BTCMClient, error) {
+	err := conf.validate()
 	if err != nil {
 		return nil, err
 	}
-	u.Path = path.Join(u.Path, btcMarketsAPIVersion)
+
+	p, err := base64.StdEncoding.DecodeString(conf.APISecret)
+	if err != nil {
+		return nil, errors.New("Error Decoding APISecret")
+	}
+
+	baseURL := btcMarketsAPIURL
+	if conf.BaseURL != nil {
+		baseURL = conf.BaseURL.String()
+	}
+	u, err := url.Parse(baseURL)
+	if err != nil {
+		return nil, err
+	}
+	u.Path = path.Join(u.Path, btcMarketsAPIVersion) // TODO: Make API Version configurable.
 
 	wss, err := url.Parse(btcMarketsWSURL)
 	if err != nil {
 		return nil, err
 	}
-	wss.Path = path.Join(wss.Path, btcMarketsWSVersion)
+	wss.Path = path.Join(wss.Path, btcMarketsWSVersion) // TODO: Make API Version configurable.
+
+	hc := http.DefaultClient
+	if conf.Httpclient != nil {
+		hc = conf.Httpclient
+	}
 
 	c := &BTCMClient{
-		apiKey:     apiKey,
+		apiKey:     conf.APIKey,
 		privateKey: p,
 		BaseURL:    u,
 		WSURL:      wss,
-		client:     http.DefaultClient,
+		client:     hc,
 		UserAgent:  "mflow/golang-client",
 	}
 	// c.Market = &MarketServiceOp{client: c}
