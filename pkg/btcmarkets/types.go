@@ -3,6 +3,13 @@ package btcmarkets
 import "time"
 
 const (
+	// BtcMarketsAPIURL TODO: Below 4 lines need to be refactored
+	//
+	BtcMarketsAPIURL     = "https://api.btcmarkets.net"
+	BtcMarketsAPIVersion = "/v3"
+	BtcMarketsWSURL      = "wss://socket.btcmarkets.net"
+	BtcMarketsWSVersion  = "/v2"
+
 	btcMarketsAPIURL     = "https://api.btcmarkets.net"
 	btcMarketsAPIVersion = "/v3"
 	btcMarketsWSURL      = "wss://socket.btcmarkets.net"
@@ -25,6 +32,7 @@ const (
 	// Authenticated EPs
 	btcMarketsAccountBalance = "/accounts/me/balances"
 	btcMarketsTradingFees    = "/accounts/me/trading-fees"
+	BtcMarketsTradingFees    = "/accounts/me/trading-fees"
 	btcMarketsTransactions   = "/accounts/me/transactions"
 	btcMarketsOrders         = "/orders"
 	btcMarketsTradeHistory   = "/trades"
