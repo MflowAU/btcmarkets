@@ -16,13 +16,13 @@ coverage:
        # advanced
         branches: 
           - master
-        if_not_found: failue
+        if_not_found: failure
         if_ci_failed: error
         informational: false
         only_pulls: false
-  # precision: 2
-  # round: down
-  # range: "70...100"
+  precision: 2
+  round: down
+  range: "50...100"
 
 parsers:
   gcov:
