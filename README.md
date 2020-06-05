@@ -1,4 +1,7 @@
 ![Go](https://github.com/MflowAU/btcmarkets/workflows/Go/badge.svg?branch=master)
+
+[![codecov](https://codecov.io/gh/MflowAU/btcmarkets/branch/master/graph/badge.svg)](https://codecov.io/gh/MflowAU/btcmarkets)
+
 # btcmarkets
 A GoLang API client for btcmarkets.net
 
