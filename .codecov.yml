@@ -6,13 +6,13 @@ coverage:
     project:
       default:
         # basic
-        target: 14%
-        threshold: 0%
+        target: 50
+        threshold: 0
         base: auto 
         flags: 
           - unittests
-        # paths: 
-        #   - "src"
+        paths: 
+          - "/"
        # advanced
         branches: 
           - master
