@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"reflect"
 	"strconv"
 	"testing"
 )
@@ -47,26 +46,26 @@ func TestSignMessage(t *testing.T) {
 	}
 }
 
-func TestGetServerTime(t *testing.T) {
-	mocktimeserver := func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`
-		{
-			"timestamp": "2019-09-01T18:34:27.045000Z"
-		  }
-		`))
-	}
-	client, mux, _, teardown, err := setup()
-	defer teardown()
-	if err != nil {
-		t.Error(err.Error())
-	}
+// func TestGetServerTime(t *testing.T) {
+// 	mocktimeserver := func(w http.ResponseWriter, r *http.Request) {
+// 		w.WriteHeader(http.StatusOK)
+// 		w.Write([]byte(`
+// 		{
+// 			"timestamp": "2019-09-01T18:34:27.045000Z"
+// 		  }
+// 		`))
+// 	}
+// 	client, mux, _, teardown, err := setup()
+// 	defer teardown()
+// 	if err != nil {
+// 		t.Error(err.Error())
+// 	}
 
-	mux.HandleFunc("/v3/time", mocktimeserver)
-	st, err := client.GetServerTime()
-	ty := reflect.TypeOf(st).String()
-	if ty != "btcmarkets.ServerTime" {
-		t.Errorf("Expected btcmarkets.ServerTime got %s", ty)
-	}
+// 	mux.HandleFunc("/v3/time", mocktimeserver)
+// 	st, err := client.GetServerTime()
+// 	ty := reflect.TypeOf(st).String()
+// 	if ty != "btcmarkets.ServerTime" {
+// 		t.Errorf("Expected btcmarkets.ServerTime got %s", ty)
+// 	}
 
-}
+// }
