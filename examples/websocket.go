@@ -3,13 +3,30 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
+	"net/http"
 	"time"
 
 	"github.com/MflowAU/btcmarkets/pkg/btcmarkets"
 )
 
-func main() {
-	c, err := btcmarkets.NewBTCMClient("XXXXXXXXXXXXXXXXXXXXXXXX", "YYYYYYYYYYYYYYYYYYYYYYYY")
+func websocketExample() {
+	hc := &http.Client{
+		Timeout: time.Second * 10,
+	}
+
+	conf := btcmarkets.ClientConfig{
+		BaseURL:    nil,
+		WsURL:      nil,
+		APIKey:     "25d55ef7-f33e-49e8",
+		APISecret:  "TXlTdXBlclNlY3JldEtleQ==",
+		Httpclient: hc,
+	}
+
+	c, err := btcmarkets.NewBTCMClient(conf)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
 	subm := btcmarkets.WSSubscribeMessage{
 		MessageType: "subscribe",
