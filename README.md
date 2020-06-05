@@ -36,8 +36,8 @@ func main() {
     }
 
     conf := ClientConfig{
-        BaseURL:    b,
-        WsURL:      w,
+        BaseURL:    nil,
+        WsURL:      nil,
         APIKey:     "25d55ef7-f33e-49e8",
         APISecret:  "TXlTdXBlclNlY3JldEtleQ==",
         Httpclient: hc,
