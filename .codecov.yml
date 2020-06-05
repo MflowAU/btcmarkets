@@ -6,9 +6,9 @@ coverage:
     project:
       default:
         # basic
-        target: 14%
-        threshold: 0%
-        base: auto 
+        # target: 14%
+        threshold: 14%
+        # base: auto 
         flags: 
           - unittests
         # paths: 
