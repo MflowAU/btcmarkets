@@ -13,7 +13,7 @@ A GoLang API client for btcmarkets.net
 | Fund Management | Done
 | Account         | Done
 | Report          | Not Impelemented
-| Misc            | Partially Implemented
+| Misc            | Done
 |Websocket        | Done
 
 ## Example
