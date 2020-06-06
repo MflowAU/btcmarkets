@@ -39,11 +39,33 @@ func TestSignMessage(t *testing.T) {
 		t.Error(err.Error())
 	}
 
+	tests := []struct {
+		name string
+		msg  string
+		want string
+	}{
+		{
+			name: "Positive test: GET/v3/accounts/me/trading-fees",
+			msg:  "GET/v3/accounts/me/trading-fees",
+			want: "MbgRsg2A+uHLWoT1gRkknReAooeeAdonNBmbVaQ3fo0DrB2lJ6k7xMIHZ/kJa1H94A+ghbbF39zXIhUnYO5T8g==",
+		},
+		// {
+		// 	name: "Negative test: GET/v3/accounts/me/trading-fees",
+		// 	msg:  "GET/v3/accounts/me/trading-fees",
+		// 	want: "saf",
+		// },
+	}
+
 	tm := strconv.FormatInt(1257894000000, 10)
-	// GET/v3/accounts/me/trading-fees1257894000000
-	smsg := client.signMessage("GET/v3/accounts/me/trading-fees" + tm)
-	if smsg != "MbgRsg2A+uHLWoT1gRkknReAooeeAdonNBmbVaQ3fo0DrB2lJ6k7xMIHZ/kJa1H94A+ghbbF39zXIhUnYO5T8g==" {
-		t.Errorf("Expecting MbgRsg2A+uHLWoT1gRkknReAooeeAdonNBmbVaQ3fo0DrB2lJ6k7xMIHZ/kJa1H94A+ghbbF39zXIhUnYO5T8g== got %s", smsg)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := client.signMessage(tt.msg + tm)
+			if tt.want != got {
+				t.Errorf("client.singMessage() wanted = '%v' got = '%v' ", tt.want, got)
+			}
+		})
+
 	}
 }
 
