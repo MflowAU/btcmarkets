@@ -16,11 +16,12 @@ func websocketExample() {
 	}
 
 	conf := btcmarkets.ClientConfig{
-		BaseURL:    nil,
-		WsURL:      nil,
-		APIKey:     "25d55ef7-f33e-49e8",
-		APISecret:  "TXlTdXBlclNlY3JldEtleQ==",
-		Httpclient: hc,
+		BaseURL:     nil,
+		WsURL:       nil,
+		APIKey:      "25d55ef7-f33e-49e8",
+		APISecret:   "TXlTdXBlclNlY3JldEtleQ==",
+		Httpclient:  hc,
+		RateLimiter: nil,
 	}
 
 	c, err := btcmarkets.NewBTCMClient(conf)

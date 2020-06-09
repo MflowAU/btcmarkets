@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/MflowAU/btcmarkets/pkg/btcmarkets"
+	"golang.org/x/time/rate"
 )
 
 func restExample() {
@@ -14,12 +15,15 @@ func restExample() {
 		Timeout: time.Second * 10,
 	}
 
+	rl := rate.NewLimiter(rate.Every(10*time.Second), 50)
+
 	conf := btcmarkets.ClientConfig{
-		BaseURL:    nil,
-		WsURL:      nil,
-		APIKey:     "25d55ef7-f33e-49e8",
-		APISecret:  "TXlTdXBlclNlY3JldEtleQ==",
-		Httpclient: hc,
+		BaseURL:     nil,
+		WsURL:       nil,
+		APIKey:      "25d55ef7-f33e-49e8",
+		APISecret:   "TXlTdXBlclNlY3JldEtleQ==",
+		Httpclient:  hc,
+		RateLimiter: rl,
 	}
 
 	c, err := btcmarkets.NewBTCMClient(conf)

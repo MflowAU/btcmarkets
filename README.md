@@ -36,12 +36,13 @@ func main() {
         Timeout: time.Second * 10,
     }
 
-    conf := ClientConfig{
-        BaseURL:    nil,
-        WsURL:      nil,
-        APIKey:     "25d55ef7-f33e-49e8",
-        APISecret:  "TXlTdXBlclNlY3JldEtleQ==",
-        Httpclient: hc,
+    conf := btcmarkets.ClientConfig{
+        BaseURL:     nil,
+        WsURL:       nil,
+        APIKey:      "25d55ef7-f33e-49e8",
+        APISecret:   "TXlTdXBlclNlY3JldEtleQ==",
+        Httpclient:  hc,
+        RateLimiter: nil,
     }
 
     o, err := c.Order.ListOrders("BTC-AUD", "close", 0, 0, 10)
