@@ -52,4 +52,4 @@ func main() {
 
 ```
 
-For more examples please check the directory folder.
+For more examples please check the example folder.
