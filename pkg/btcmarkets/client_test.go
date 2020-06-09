@@ -7,22 +7,30 @@ import (
 	"reflect"
 	"strconv"
 	"testing"
+	"time"
+
+	"golang.org/x/time/rate"
 )
 
-func setup() (*BTCMClient, *http.ServeMux, *httptest.Server, func(), error) {
+func setup(r *rate.Limiter) (*BTCMClient, *http.ServeMux, *httptest.Server, func(), error) {
 	mux := http.NewServeMux()
 
 	ts := httptest.NewServer(mux)
+	rl := rate.NewLimiter(rate.Every(10*time.Second), 50)
+	if rl != nil {
+		rl = r
+	}
 
 	b, _ := url.Parse(ts.URL)
 	w, _ := url.Parse(ts.URL)
 
 	conf := ClientConfig{
-		BaseURL:    b,
-		WsURL:      w,
-		APIKey:     "25d55ef7-f33e-49e8",
-		APISecret:  "TXlTdXBlclNlY3JldEtleQ==",
-		Httpclient: ts.Client(),
+		BaseURL:     b,
+		WsURL:       w,
+		APIKey:      "25d55ef7-f33e-49e8",
+		APISecret:   "TXlTdXBlclNlY3JldEtleQ==",
+		Httpclient:  ts.Client(),
+		RateLimiter: rl,
 	}
 
 	client, err := NewBTCMClient(conf)
@@ -32,8 +40,9 @@ func setup() (*BTCMClient, *http.ServeMux, *httptest.Server, func(), error) {
 
 	return client, mux, ts, ts.Close, nil
 }
+
 func TestSignMessage(t *testing.T) {
-	client, _, _, teardown, err := setup()
+	client, _, _, teardown, err := setup(nil)
 	defer teardown()
 	if err != nil {
 		t.Error(err.Error())
@@ -78,7 +87,7 @@ func TestGetServerTime(t *testing.T) {
 		  }
 		`))
 	}
-	client, mux, _, teardown, err := setup()
+	client, mux, _, teardown, err := setup(nil)
 	defer teardown()
 	if err != nil {
 		t.Error(err.Error())

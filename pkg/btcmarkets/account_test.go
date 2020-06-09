@@ -1,9 +1,11 @@
 package btcmarkets
 
 import (
-	"fmt"
 	"net/http"
 	"testing"
+	"time"
+
+	"golang.org/x/time/rate"
 )
 
 func TestAccountGetTradingFees(t *testing.T) {
@@ -32,7 +34,7 @@ func TestAccountGetTradingFees(t *testing.T) {
 		`))
 	}
 
-	client, mux, _, teardown, err := setup()
+	client, mux, _, teardown, err := setup(nil)
 	defer teardown()
 	if err != nil {
 		t.Fatal(err)
@@ -65,7 +67,7 @@ func TestGetBalance(t *testing.T) {
 		`))
 	}
 
-	client, mux, _, teardown, err := setup()
+	client, mux, _, teardown, err := setup(nil)
 	defer teardown()
 	if err != nil {
 		t.Fatal(err)
@@ -79,11 +81,65 @@ func TestGetBalance(t *testing.T) {
 	for _, a := range ab {
 		switch a.AssetName {
 		case "ETH":
-			fmt.Print("All good")
+			t.Log("All good")
 		case "LTC":
-			fmt.Print("All good")
+			t.Log("All good")
 		default:
 			t.Errorf("Want ETH or LTC got %v", a.AssetName)
 		}
 	}
+}
+
+func TestGetBalanceWithRateLimit(t *testing.T) {
+	mockServer := func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`[
+			{
+			  "assetName": "LTC",
+			  "balance": "5",
+			  "available": "5",
+			  "locked": "0"
+			},
+			{
+			  "assetName": "ETH",
+			  "balance": "1.07583642",
+			  "available": "1.0",
+			  "locked": "0.07583642"
+			}
+		  ]
+		`))
+	}
+
+	client, mux, _, teardown, err := setup(rate.NewLimiter(rate.Every(1*time.Second), 1))
+
+	defer teardown()
+	if err != nil {
+		t.Fatal(err)
+	}
+	mux.HandleFunc("/v3/accounts/me/balances", mockServer)
+
+	before := time.Now()
+	for i := 0; i <= 1; i++ {
+		ab, err := client.Account.GetBalances()
+		if err != nil {
+			t.Errorf(err.Error())
+		}
+		for _, a := range ab {
+			switch a.AssetName {
+			case "ETH":
+				t.Log("All good")
+			case "LTC":
+				t.Log("All good")
+			default:
+				t.Errorf("Want ETH or LTC got %v", a.AssetName)
+			}
+		}
+	}
+	after := time.Now()
+	diff := after.Sub(before)
+
+	if diff.Seconds() < 1 {
+		t.Errorf("Expected execution time > 3 but took %v", diff.Seconds())
+	}
+
 }

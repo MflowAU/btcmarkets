@@ -2,6 +2,7 @@ package btcmarkets
 
 import (
 	"bytes"
+	"context"
 	"crypto/hmac"
 	"crypto/sha512"
 	"encoding/base64"
@@ -13,17 +14,20 @@ import (
 	"path"
 	"strconv"
 	"time"
+
+	"golang.org/x/time/rate"
 )
 
 // BTCMClient is the main struct type representing an interface with the API as a
 // particular client user.
 type BTCMClient struct {
-	apiKey     string
-	privateKey []byte
-	BaseURL    *url.URL
-	WSURL      *url.URL
-	client     *http.Client
-	UserAgent  string
+	apiKey      string
+	privateKey  []byte
+	BaseURL     *url.URL
+	WSURL       *url.URL
+	client      *http.Client
+	UserAgent   string
+	Ratelimiter *rate.Limiter
 
 	// Services used for communicating with the API
 	// Market MarketService
@@ -44,11 +48,12 @@ type ServerTime struct {
 
 // ClientConfig TODO:...
 type ClientConfig struct {
-	Httpclient *http.Client
-	APIKey     string
-	APISecret  string
-	WsURL      *url.URL
-	BaseURL    *url.URL
+	Httpclient  *http.Client
+	APIKey      string
+	APISecret   string
+	WsURL       *url.URL
+	BaseURL     *url.URL
+	RateLimiter *rate.Limiter
 }
 
 func (c ClientConfig) validate() error {
@@ -68,6 +73,11 @@ func NewBTCMClient(conf ClientConfig) (*BTCMClient, error) {
 	p, err := base64.StdEncoding.DecodeString(conf.APISecret)
 	if err != nil {
 		return nil, errors.New("Error Decoding APISecret")
+	}
+
+	rl := rate.NewLimiter(rate.Every(10*time.Second), 50)
+	if conf.RateLimiter != nil {
+		rl = conf.RateLimiter
 	}
 
 	baseURL := btcMarketsAPIURL
@@ -92,14 +102,15 @@ func NewBTCMClient(conf ClientConfig) (*BTCMClient, error) {
 	}
 
 	c := &BTCMClient{
-		apiKey:     conf.APIKey,
-		privateKey: p,
-		BaseURL:    u,
-		WSURL:      wss,
-		client:     hc,
-		UserAgent:  "mflow/golang-client",
+		apiKey:      conf.APIKey,
+		privateKey:  p,
+		BaseURL:     u,
+		WSURL:       wss,
+		client:      hc,
+		UserAgent:   "mflow/golang-client",
+		Ratelimiter: rl,
 	}
-	// c.Market = &MarketServiceOp{client: c}
+
 	c.Market = MarketServiceOp{client: c}
 	c.Order = OrderServiceOp{client: c}
 	c.Batch = BatchOrderServiceOp{client: c}
@@ -150,6 +161,14 @@ func (c *BTCMClient) NewRequest(method, urlPath string, body interface{}) (*http
 // The response is JSON decoded and store in the value pointed
 // by v, or returns an error
 func (c *BTCMClient) Do(req *http.Request, v interface{}) (*http.Response, error) {
+	// ctx is generated here only to use with Ratelimiter
+	// TODO: Fix performance by removing unneeded allocaton here
+	ctx := context.Background()
+	err := c.Ratelimiter.Wait(ctx) // This is a blocking call.
+	if err != nil {
+		return nil, err
+	}
+
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, err
@@ -171,6 +190,14 @@ func (c *BTCMClient) Do(req *http.Request, v interface{}) (*http.Response, error
 
 // DoAuthenticated makes API request and return the API Response
 func (c *BTCMClient) DoAuthenticated(req *http.Request, data, result interface{}) (*http.Response, error) {
+	// ctx is generated here only to use with Ratelimiter
+	// TODO: Fix performance by removing unneeded allocaton here
+	ctx := context.Background()
+	err := c.Ratelimiter.Wait(ctx) // This is a blocking call.
+	if err != nil {
+		return nil, err
+	}
+
 	t := strconv.FormatInt(time.Now().UTC().UnixNano()/1000000, 10)
 	p := req.URL.Path
 

@@ -6,8 +6,8 @@ coverage:
     project:
       default:
         # basic
-        target: 13
-        threshold: 0
+        target: auto
+        threshold: 1
         base: auto 
         flags: 
           - unittests
@@ -31,6 +31,14 @@ parsers:
       loop: yes
       method: no
       macro: no
+
+ignore:
+  - "test_*.rb"       # wildcards accepted
+  - "**/*.py"         # glob accepted
+  - "**/*.md"
+  - "**/*.mod"
+  - "**/*.sum"
+  - "**/*.yml"
 
 comment:
   layout: "reach,diff,flags,tree"

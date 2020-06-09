@@ -18,6 +18,7 @@ A GoLang API client for btcmarkets.net
 | Report          | Not Impelemented
 | Misc            | Done
 |Websocket        | Done
+|Ratelimiting     | Partial - Global ratelimit implemented
 
 ## Example
 
