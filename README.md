@@ -63,3 +63,16 @@ For more examples please check the example folder.
 * Low Test coverage - This is something that will grow overtime. The project aims for the test coverage to be 80%.
 
 * Websocket event description - BTCMarkets websocket doesn't provide event description or any metadata about the data sent over the socket once a subscription is established. All channel data needs to be categorised by the consuming client.
+
+## Support
+
+If you like this project and would want to support it please consider taking a look
+at the issues section at:
+
+https://github.com/MflowAU/btcmarkets/issues
+
+or consider donating to
+
+Bitcoin:  1B2kZETHm9tjhPKtCCEo6eWhwT5TfXWE6u
+Etherium: 0x00912fdef62ab7d9c1cbee712a58105eb1dbd42f
+BitCash:  1B2kZETHm9tjhPKtCCEo6eWhwT5TfXWE6u
