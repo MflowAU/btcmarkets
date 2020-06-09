@@ -6,8 +6,8 @@ coverage:
     project:
       default:
         # basic
-        target: 13
-        threshold: 0
+        target: auto
+        threshold: 1
         base: auto 
         flags: 
           - unittests
