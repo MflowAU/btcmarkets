@@ -7,6 +7,9 @@ import (
 	"reflect"
 	"strconv"
 	"testing"
+	"time"
+
+	"golang.org/x/time/rate"
 )
 
 func setup() (*BTCMClient, *http.ServeMux, *httptest.Server, func(), error) {
@@ -18,11 +21,12 @@ func setup() (*BTCMClient, *http.ServeMux, *httptest.Server, func(), error) {
 	w, _ := url.Parse(ts.URL)
 
 	conf := ClientConfig{
-		BaseURL:    b,
-		WsURL:      w,
-		APIKey:     "25d55ef7-f33e-49e8",
-		APISecret:  "TXlTdXBlclNlY3JldEtleQ==",
-		Httpclient: ts.Client(),
+		BaseURL:     b,
+		WsURL:       w,
+		APIKey:      "25d55ef7-f33e-49e8",
+		APISecret:   "TXlTdXBlclNlY3JldEtleQ==",
+		Httpclient:  ts.Client(),
+		RateLimiter: rate.NewLimiter(rate.Every(10*time.Second), 50),
 	}
 
 	client, err := NewBTCMClient(conf)
