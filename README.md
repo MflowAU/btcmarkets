@@ -53,3 +53,11 @@ func main() {
 ```
 
 For more examples please check the example folder.
+
+## Known issues
+
+* The code base requires better inline documentation and Examples to render properly on [pkg.go.dev](https://pkg.go.dev). Please see [Issue #15](https://github.com/MflowAU/btcmarkets/issues/15) if you'd like to contribute to fix this.
+
+* Low Test coverage - This is something that will grow overtime. The project aims for the test coverage to be 80%.
+
+* Websocket event description - BTCMarkets websocket doesn't provide event description or any metadata about the data sent over the socket once a subscription is established. All channel data needs to be categorised by the consuming client.
