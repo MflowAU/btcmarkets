@@ -32,6 +32,14 @@ parsers:
       method: no
       macro: no
 
+ignore:
+  - "test_*.rb"       # wildcards accepted
+  - "**/*.py"         # glob accepted
+  - "**/*.md"
+  - "**/*.mod"
+  - "**/*.sum"
+  - "**/*.yml"
+
 comment:
   layout: "reach,diff,flags,tree"
   behavior: default
