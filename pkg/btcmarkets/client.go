@@ -75,12 +75,13 @@ func NewBTCMClient(conf ClientConfig) (*BTCMClient, error) {
 		return nil, errors.New("Error Decoding APISecret")
 	}
 
-	// TODO: check if ClientConfig has rate.Limiter set
 	rl := rate.NewLimiter(rate.Every(10*time.Second), 50)
+	if conf.RateLimiter != nil {
+		rl = conf.RateLimiter
+	}
 
 	baseURL := btcMarketsAPIURL
 	if conf.BaseURL != nil {
-		// TODO: This is a bug. baseURL is unset outside this codeblock
 		baseURL = conf.BaseURL.String()
 	}
 	u, err := url.Parse(baseURL)
@@ -109,7 +110,7 @@ func NewBTCMClient(conf ClientConfig) (*BTCMClient, error) {
 		UserAgent:   "mflow/golang-client",
 		Ratelimiter: rl,
 	}
-	// c.Market = &MarketServiceOp{client: c}
+
 	c.Market = MarketServiceOp{client: c}
 	c.Order = OrderServiceOp{client: c}
 	c.Batch = BatchOrderServiceOp{client: c}
@@ -161,6 +162,7 @@ func (c *BTCMClient) NewRequest(method, urlPath string, body interface{}) (*http
 // by v, or returns an error
 func (c *BTCMClient) Do(req *http.Request, v interface{}) (*http.Response, error) {
 	// ctx is generated here only to use with Ratelimiter
+	// TODO: Fix performance by removing unneeded allocaton here
 	ctx := context.Background()
 	err := c.Ratelimiter.Wait(ctx) // This is a blocking call.
 	if err != nil {
@@ -189,6 +191,7 @@ func (c *BTCMClient) Do(req *http.Request, v interface{}) (*http.Response, error
 // DoAuthenticated makes API request and return the API Response
 func (c *BTCMClient) DoAuthenticated(req *http.Request, data, result interface{}) (*http.Response, error) {
 	// ctx is generated here only to use with Ratelimiter
+	// TODO: Fix performance by removing unneeded allocaton here
 	ctx := context.Background()
 	err := c.Ratelimiter.Wait(ctx) // This is a blocking call.
 	if err != nil {
