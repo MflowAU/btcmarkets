@@ -139,7 +139,7 @@ func TestGetBalanceWithRateLimit(t *testing.T) {
 	diff := after.Sub(before)
 
 	if diff.Seconds() < 1 {
-		t.Errorf("Expected execution time > 3 but took %v", diff.Seconds())
+		t.Errorf("Expected execution time > 1 but took %v", diff.Seconds())
 	}
 
 }
