@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -54,7 +53,7 @@ func websocketExample() {
 
 	ch, err := c.WebSocket.Subscribe(ctx, subm)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Fatal(err.Error())
 	}
 
 	go func() {
@@ -63,7 +62,7 @@ func websocketExample() {
 	}()
 
 	for i := 0; i < 50; i++ {
-		fmt.Println(string(<-ch))
+		log.Print(string(<-ch))
 	}
-	fmt.Println("Done...")
+	log.Print("Done...")
 }
