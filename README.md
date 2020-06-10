@@ -62,4 +62,4 @@ For more examples please check the example folder.
 
 * Low Test coverage - This is something that will grow overtime. The project aims for the test coverage to be 80%.
 
-* Websocket event description - BTCMarkets websocket doesn't provide event description or any metadata about the data sent over the socket once a subscription is established. All channel data needs to be categorised by the consuming client.
+* Websocket event description - BTCMarkets websocket returns a flat JSON message. The flat structure makes it very inefficient to cast the message onto the appropriate struct.
