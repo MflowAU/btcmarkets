@@ -46,6 +46,7 @@ func main() {
         RateLimiter: rl,
     }
 
+    c, err := NewBTCMClient(conf)
     o, err := c.Order.ListOrders("BTC-AUD", "close", 0, 0, 10)
     if err != nil {
         fmt.Println(err.Error())
