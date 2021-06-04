@@ -35,6 +35,7 @@ func main() {
     hc :=  &http.Client{
         Timeout: time.Second * 10,
     }
+    rl := rate.NewLimiter(rate.Every(10*time.Second), 50)
 
     conf := btcmarkets.ClientConfig{
         BaseURL:     nil,
@@ -42,7 +43,7 @@ func main() {
         APIKey:      "25d55ef7-f33e-49e8",
         APISecret:   "TXlTdXBlclNlY3JldEtleQ==",
         Httpclient:  hc,
-        RateLimiter: nil,
+        RateLimiter: rl,
     }
 
     o, err := c.Order.ListOrders("BTC-AUD", "close", 0, 0, 10)
